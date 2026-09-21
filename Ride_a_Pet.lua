@@ -1017,17 +1017,113 @@ local function GetHatchPrompt()
 end
 
 
+-- =====================================
+-- AUTO PLACE
+-- =====================================
+
+local function PlaceSelectedEgg()
+
+    if not AutoPlaceEnabled then
+        return false
+    end
+
+    if StealingRunning then
+        return false
+    end
+
+    if WaitingForHatch then
+        return false
+    end
+
+    local egg =
+        GetBackpackEgg()
+
+    if not egg then
+        return false
+    end
+
+    local humanoid =
+        GetHumanoid()
+
+    if not humanoid then
+        return false
+    end
+
+
+    -- =================================
+    -- EQUIP
+    -- =================================
+
+    humanoid:EquipTool(egg)
+
+    task.wait(0.2)
+
+
+    -- =================================
+    -- BASEPLATE
+    -- =================================
+
+    local baseplate =
+        GetMyBaseplate()
+
+    if not baseplate then
+        humanoid:UnequipTools()
+        return false
+    end
+
+
+    -- =================================
+    -- RANDOM POSITION
+    -- =================================
+
+    local position =
+        GetRandomBaseplatePosition(
+            baseplate
+        )
+
+    if not position then
+        humanoid:UnequipTools()
+        return false
+    end
+
+
+    -- =================================
+    -- PLACE
+    -- =================================
+
+    local success =
+        pcall(function()
+
+            EggPlaced:FireServer({
+                PlantPosition = position
+            })
+
+        end)
+
+
+    if not success then
+        humanoid:UnequipTools()
+        return false
+    end
+
+
+    task.wait(0.3)
+
+
     -- =================================
     -- CHECK PLACEMENT RESULT
     -- =================================
 
     if egg.Parent == Player.Character then
 
-        local currentEggCount = GetEggCount()
+        local currentEggCount =
+            GetEggCount()
 
         humanoid:UnequipTools()
 
-        LearnedEggCapacity = currentEggCount
+        LearnedEggCapacity =
+            currentEggCount
+
         WaitingForHatch = true
 
         print(
@@ -1048,101 +1144,6 @@ end
     print(
         "Egg placed successfully. Continuing placement."
     )
-
-    return true
-
-    -- =================================
-    -- EQUIP
-    -- =================================
-
-    humanoid:EquipTool(egg)
-
-    task.wait(0.2)
-
-
-    -- =================================
-    -- BASEPLATE
-    -- =================================
-
-    local baseplate =
-        GetMyBaseplate()
-
-    if not baseplate then
-
-        humanoid:UnequipTools()
-
-        return false
-    end
-
-
-    -- =================================
-    -- RANDOM POSITION
-    -- =================================
-
-    local position =
-        GetRandomBaseplatePosition(
-            baseplate
-        )
-
-
-    if not position then
-
-        humanoid:UnequipTools()
-
-        return false
-    end
-
-
-    -- =================================
-    -- PLACE
-    -- =================================
-
-    local success =
-        pcall(function()
-
-            EggPlaced:FireServer({
-                PlantPosition = position
-            })
-
-        end)
-
-
-    if not success then
-
-        humanoid:UnequipTools()
-
-        return false
-    end
-
-
-    task.wait(0.3)
-
-
-    -- =================================
-    -- FAILED / FULL PLOT
-    -- =================================
-
-    if egg.Parent == Player.Character then
-
-        humanoid:UnequipTools()
-
-        print(
-            "Placement failed. Egg unequipped."
-        )
-
-        return false
-    end
-
-
-    -- =================================
-    -- SUCCESS
-    -- =================================
-
-    print(
-        "Egg placed. Waiting for Auto Hatch."
-    )
-
-    WaitingForHatch = true
 
     return true
 end
