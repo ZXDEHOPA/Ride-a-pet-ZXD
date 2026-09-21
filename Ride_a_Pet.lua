@@ -1002,13 +1002,71 @@ local function GetBackpackEgg()
     end
 
 
-    -- =================================
-    -- WEIGHT PREFERENCE
-    -- =================================
+-- =================================
+-- WEIGHT PREFERENCE
+-- =================================
 
-    -- Weight sorting will be added here
-    -- once the egg weight value/location
-    -- is confirmed.
+if WeightPreference == "Lowest Weight" then
+
+    table.sort(
+        availableEggs,
+        function(a, b)
+
+            local dataA = a:FindFirstChild("Data")
+            local dataB = b:FindFirstChild("Data")
+
+            local weightA =
+                dataA
+                and dataA:FindFirstChild("Weight")
+
+            local weightB =
+                dataB
+                and dataB:FindFirstChild("Weight")
+
+            if not weightA then
+                return false
+            end
+
+            if not weightB then
+                return true
+            end
+
+            return weightA.Value < weightB.Value
+
+        end
+    )
+
+elseif WeightPreference == "Highest Weight" then
+
+    table.sort(
+        availableEggs,
+        function(a, b)
+
+            local dataA = a:FindFirstChild("Data")
+            local dataB = b:FindFirstChild("Data")
+
+            local weightA =
+                dataA
+                and dataA:FindFirstChild("Weight")
+
+            local weightB =
+                dataB
+                and dataB:FindFirstChild("Weight")
+
+            if not weightA then
+                return false
+            end
+
+            if not weightB then
+                return true
+            end
+
+            return weightA.Value > weightB.Value
+
+        end
+    )
+
+end
 
 
     return availableEggs[1]
