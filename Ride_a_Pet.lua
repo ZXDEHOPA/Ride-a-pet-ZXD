@@ -534,149 +534,199 @@ local function RunStealingEgg()
         ).Magnitude
 
 
-    -- =================================
-    -- 4 WAYPOINTS
-    -- =================================
+  -- =================================
+-- 5 WAYPOINTS
+-- =================================
 
-    local waypoint1 =
-        startPosition
-        + direction
-        * (totalDistance * 0.20)
+local waypoint1 =
+    startPosition
+    + direction
+    * (totalDistance * 0.1667)
 
-    local waypoint2 =
-        startPosition
-        + direction
-        * (totalDistance * 0.40)
+local waypoint2 =
+    startPosition
+    + direction
+    * (totalDistance * 0.3333)
 
-    local waypoint3 =
-        startPosition
-        + direction
-        * (totalDistance * 0.60)
+local waypoint3 =
+    startPosition
+    + direction
+    * (totalDistance * 0.5000)
 
-    local waypoint4 =
-        startPosition
-        + direction
-        * (totalDistance * 0.80)
+local waypoint4 =
+    startPosition
+    + direction
+    * (totalDistance * 0.6667)
+
+local waypoint5 =
+    startPosition
+    + direction
+    * (totalDistance * 0.8333)
 
 
-    -- =================================
-    -- WAYPOINT 1
-    -- =================================
+-- =================================
+-- WAYPOINT 1
+-- =================================
 
-    root =
-        GetRoot()
+root =
+    GetRoot()
 
-    if not root or not StealingEnabled then
-
-        StealingRunning = false
-
-        return
+if not root or not StealingEnabled then
+    if root then
+        root.Anchored = false
     end
 
+    StealingRunning = false
+    return
+end
 
-    root.CFrame =
-        CFrame.new(waypoint1)
+root.CFrame =
+    CFrame.new(waypoint1)
+
+root.Anchored = true
+
+if not WaitStealing(
+    WAYPOINT_WAIT
+) then
+
+    root.Anchored = false
+    StealingRunning = false
+    return
+end
+
+root.Anchored = false
 
 
-    -- UPDATED:
-    -- WAYPOINT_WAIT = 1
+-- =================================
+-- WAYPOINT 2
+-- =================================
 
-    if not WaitStealing(
-        WAYPOINT_WAIT
-    ) then
+root =
+    GetRoot()
 
-        StealingRunning = false
-
-        return
+if not root or not StealingEnabled then
+    if root then
+        root.Anchored = false
     end
 
+    StealingRunning = false
+    return
+end
 
-    -- =================================
-    -- WAYPOINT 2
-    -- =================================
+root.CFrame =
+    CFrame.new(waypoint2)
 
-    root =
-        GetRoot()
+root.Anchored = true
 
-    if not root or not StealingEnabled then
+if not WaitStealing(
+    WAYPOINT_WAIT
+) then
 
-        StealingRunning = false
+    root.Anchored = false
+    StealingRunning = false
+    return
+end
 
-        return
+root.Anchored = false
+
+
+-- =================================
+-- WAYPOINT 3
+-- =================================
+
+root =
+    GetRoot()
+
+if not root or not StealingEnabled then
+    if root then
+        root.Anchored = false
     end
 
+    StealingRunning = false
+    return
+end
 
-    root.CFrame =
-        CFrame.new(waypoint2)
+root.CFrame =
+    CFrame.new(waypoint3)
+
+root.Anchored = true
+
+if not WaitStealing(
+    WAYPOINT_WAIT
+) then
+
+    root.Anchored = false
+    StealingRunning = false
+    return
+end
+
+root.Anchored = false
 
 
-    if not WaitStealing(
-        WAYPOINT_WAIT
-    ) then
+-- =================================
+-- WAYPOINT 4
+-- =================================
 
-        StealingRunning = false
+root =
+    GetRoot()
 
-        return
+if not root or not StealingEnabled then
+    if root then
+        root.Anchored = false
     end
 
+    StealingRunning = false
+    return
+end
 
-    -- =================================
-    -- WAYPOINT 3
-    -- =================================
+root.CFrame =
+    CFrame.new(waypoint4)
 
-    root =
-        GetRoot()
+root.Anchored = true
 
-    if not root or not StealingEnabled then
+if not WaitStealing(
+    WAYPOINT_WAIT
+) then
 
-        StealingRunning = false
+    root.Anchored = false
+    StealingRunning = false
+    return
+end
 
-        return
+root.Anchored = false
+
+
+-- =================================
+-- WAYPOINT 5
+-- =================================
+
+root =
+    GetRoot()
+
+if not root or not StealingEnabled then
+    if root then
+        root.Anchored = false
     end
 
+    StealingRunning = false
+    return
+end
 
-    root.CFrame =
-        CFrame.new(waypoint3)
+root.CFrame =
+    CFrame.new(waypoint5)
 
+root.Anchored = true
 
-    if not WaitStealing(
-        WAYPOINT_WAIT
-    ) then
+if not WaitStealing(
+    WAYPOINT_WAIT
+) then
 
-        StealingRunning = false
+    root.Anchored = false
+    StealingRunning = false
+    return
+end
 
-        return
-    end
-
-
-    -- =================================
-    -- WAYPOINT 4
-    -- =================================
-
-    root =
-        GetRoot()
-
-    if not root or not StealingEnabled then
-
-        StealingRunning = false
-
-        return
-    end
-
-
-    root.CFrame =
-        CFrame.new(waypoint4)
-
-
-    if not WaitStealing(
-        WAYPOINT_WAIT
-    ) then
-
-        StealingRunning = false
-
-        return
-    end
-
+root.Anchored = false
 
     -- =================================
     -- RECALCULATE FENCE
