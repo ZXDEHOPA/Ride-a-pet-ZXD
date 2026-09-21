@@ -52,6 +52,9 @@ local StealingRunning = false
 local AutoPlaceEnabled = false
 local AutoHatchEnabled = false
 
+local WeightPreference = "None"
+local RarityPreference = "None"
+
 local LuckEnabled = false
 local LuckMode = "One Time"
 
