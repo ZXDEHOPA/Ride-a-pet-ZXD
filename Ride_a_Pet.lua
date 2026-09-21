@@ -87,8 +87,8 @@ local LuckMode = "One Time"
 local LOAD_WAIT = 1.5
 local AFTER_EGG_WAIT = 0.5
 
-local WAYPOINT_WAIT = 0.75
-local NEAR_FENCE_WAIT = 5
+local WAYPOINT_WAIT = 0.5
+local NEAR_FENCE_WAIT = 8
 
 local WALK_DISTANCE = 8
 
