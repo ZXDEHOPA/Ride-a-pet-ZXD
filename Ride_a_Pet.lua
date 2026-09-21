@@ -73,7 +73,7 @@ local AutoHatchEnabled = false
 
 
 -- =====================================
--- LUCK
+-- AUTO LUCK
 -- =====================================
 
 local LuckEnabled = false
@@ -126,7 +126,7 @@ end
 
 
 -- =====================================
--- UNEQUIP CURRENT TOOL
+-- UNEQUIP
 -- =====================================
 
 local function UnequipCurrentTool()
@@ -141,44 +141,52 @@ end
 
 
 -- =====================================
--- EGG FUNCTIONS
+-- RENDERED EGGS
+--
+-- STEALING EGGS ONLY
 -- =====================================
 
-local function GetEgg(name)
+local function GetSelectedStealingEgg()
 
-    local egg =
+    local renderedEggs =
         workspace:FindFirstChild(
-            name,
-            true
+            "RenderedEggs"
         )
 
-    if egg and egg:IsA("Model") then
-        return egg
+    if not renderedEggs then
+        return nil
     end
 
-    return nil
-end
-
-
-local function GetSelectedStealingEgg()
 
     for _, eggName in ipairs(Eggs) do
 
         if SelectedStealingEggs[eggName] then
 
-            local egg =
-                GetEgg(eggName)
+            for _, egg in ipairs(
+                renderedEggs:GetChildren()
+            ) do
 
-            if egg then
-                return egg
+                if egg.Name == eggName
+                    and egg:IsA("Model")
+                then
+
+                    return egg
+
+                end
+
             end
 
         end
     end
 
+
     return nil
 end
 
+
+-- =====================================
+-- EGG PROMPT
+-- =====================================
 
 local function GetEggPrompt(egg)
 
@@ -199,7 +207,7 @@ end
 
 
 -- =====================================
--- FENCE FUNCTIONS
+-- FENCE
 -- =====================================
 
 local function GetFence()
@@ -299,10 +307,10 @@ end
 
 
 -- =====================================
--- WAIT WITH CHECK
+-- STEALING WAIT
 -- =====================================
 
-local function WaitWithCheck(duration)
+local function WaitStealing(duration)
 
     local start =
         os.clock()
@@ -333,7 +341,7 @@ local function RunStealingEgg()
 
 
     -- =================================
-    -- FIND SELECTED EGG
+    -- FIND EGG IN RENDERED EGGS
     -- =================================
 
     local egg =
@@ -370,10 +378,12 @@ local function RunStealingEgg()
             + Vector3.new(0, 3, 0)
         )
 
-    print("Stealing Egg: TP #1")
+    print(
+        "Stealing Egg: TP #1"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         LOAD_WAIT
     ) then
 
@@ -385,6 +395,7 @@ local function RunStealingEgg()
 
     -- =================================
     -- TP #2
+    -- RECHECK RENDERED EGGS
     -- =================================
 
     root =
@@ -407,10 +418,12 @@ local function RunStealingEgg()
             + Vector3.new(0, 3, 0)
         )
 
-    print("Stealing Egg: TP #2")
+    print(
+        "Stealing Egg: TP #2"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         LOAD_WAIT
     ) then
 
@@ -441,7 +454,7 @@ local function RunStealingEgg()
     if not prompt then
 
         warn(
-            "Egg ProximityPrompt not found"
+            "Rendered egg ProximityPrompt not found"
         )
 
         StealingRunning = false
@@ -454,10 +467,12 @@ local function RunStealingEgg()
         prompt
     )
 
-    print("Stealing Egg: Egg fired")
+    print(
+        "Stealing Egg: Egg fired"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         AFTER_EGG_WAIT
     ) then
 
@@ -542,7 +557,7 @@ local function RunStealingEgg()
 
 
     -- =================================
-    -- WAYPOINTS
+    -- 4 DYNAMIC WAYPOINTS
     -- =================================
 
     local waypoint1 =
@@ -586,10 +601,12 @@ local function RunStealingEgg()
             waypoint1
         )
 
-    print("Stealing Egg: Waypoint 1")
+    print(
+        "Stealing Egg: Waypoint 1"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
@@ -619,10 +636,12 @@ local function RunStealingEgg()
             waypoint2
         )
 
-    print("Stealing Egg: Waypoint 2")
+    print(
+        "Stealing Egg: Waypoint 2"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
@@ -652,10 +671,12 @@ local function RunStealingEgg()
             waypoint3
         )
 
-    print("Stealing Egg: Waypoint 3")
+    print(
+        "Stealing Egg: Waypoint 3"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
@@ -685,10 +706,12 @@ local function RunStealingEgg()
             waypoint4
         )
 
-    print("Stealing Egg: Waypoint 4")
+    print(
+        "Stealing Egg: Waypoint 4"
+    )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
@@ -767,15 +790,15 @@ local function RunStealingEgg()
 
 
     -- =================================
-    -- WAIT
+    -- WAIT NEAR FENCE
     -- =================================
 
     print(
-        "Stealing Egg: Waiting near fence..."
+        "Stealing Egg: Waiting..."
     )
 
 
-    if not WaitWithCheck(
+    if not WaitStealing(
         NEAR_FENCE_WAIT
     ) then
 
@@ -786,7 +809,7 @@ local function RunStealingEgg()
 
 
     -- =================================
-    -- FENCE CENTER
+    -- TELEPORT TO FENCE CENTER
     -- =================================
 
     root =
@@ -957,7 +980,7 @@ end
 
 
 -- =====================================
--- SELECTED PLACE EGG
+-- BACKPACK EGG
 -- =====================================
 
 local function GetBackpackEgg()
@@ -1091,7 +1114,7 @@ local function PlaceSelectedEgg()
 
 
     -- =================================
-    -- BASEPLATE
+    -- FIND BASEPLATE
     -- =================================
 
     local baseplate =
@@ -1127,7 +1150,7 @@ local function PlaceSelectedEgg()
     -- PLACE
     -- =================================
 
-    local placedEgg =
+    local equippedEgg =
         egg
 
     EggPlaced:FireServer({
@@ -1139,22 +1162,17 @@ local function PlaceSelectedEgg()
 
 
     -- =================================
-    -- FULL PLOT CHECK
-    --
-    -- If the egg could not be placed,
-    -- the equipped tool remains.
-    -- Unequip it so it doesn't stay
-    -- stuck in the player's hand.
+    -- PLACE FAILED / PLOT FULL
     -- =================================
 
-    if placedEgg.Parent
+    if equippedEgg.Parent
         == Player.Character
     then
 
         UnequipCurrentTool()
 
         print(
-            "Place failed or plot is full. Tool unequipped."
+            "Egg could not be placed. Tool unequipped."
         )
 
         return
@@ -1162,7 +1180,7 @@ local function PlaceSelectedEgg()
 
 
     print(
-        placedEgg.Name .. " placed!"
+        equippedEgg.Name .. " placed!"
     )
 end
 
@@ -1180,8 +1198,6 @@ local function HatchEgg()
     end
 
 
-    -- Never hatch while stealing
-    -- is currently running.
     if StealingRunning then
         return
     end
@@ -1304,7 +1320,7 @@ Tab:CreateToggle({
 
 Tab:CreateDropdown({
 
-    Name = "Egg Place",
+    Name = "Egg",
 
     Options = Eggs,
 
@@ -1344,12 +1360,12 @@ Tab:CreateDropdown({
 
 
 -- =====================================
--- AUTO PLACE
+-- AUTO PLACE EGG
 -- =====================================
 
 Tab:CreateToggle({
 
-    Name = "Auto Place",
+    Name = "Auto Place Egg",
 
     CurrentValue = false,
 
@@ -1372,8 +1388,6 @@ Tab:CreateToggle({
 
             while AutoPlaceEnabled do
 
-                -- Don't place while an egg
-                -- stealing run is active.
                 if not StealingRunning then
 
                     PlaceSelectedEgg()
@@ -1391,12 +1405,12 @@ Tab:CreateToggle({
 
 
 -- =====================================
--- AUTO HATCH
+-- AUTO HATCH EGG
 -- =====================================
 
 Tab:CreateToggle({
 
-    Name = "Auto Hatch",
+    Name = "Auto Hatch Egg",
 
     CurrentValue = false,
 
@@ -1416,8 +1430,7 @@ Tab:CreateToggle({
 
             while AutoHatchEnabled do
 
-                -- Stealing Egg always gets
-                -- priority over hatching.
+                -- Stealing always gets priority.
                 if not StealingRunning then
 
                     HatchEgg()
