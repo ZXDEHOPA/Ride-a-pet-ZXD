@@ -76,7 +76,7 @@ local SelectedPlaceEggs = {
 -- STEALING SETTINGS
 -- =====================================
 
-local LOAD_WAIT = 1.5
+local LOAD_WAIT = 3
 local AFTER_EGG_WAIT = 1
 local WAYPOINT_WAIT = 1
 local NEAR_FENCE_WAIT = 10
