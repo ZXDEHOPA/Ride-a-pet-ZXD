@@ -57,7 +57,7 @@ local LuckMode = "One Time"
 
 local WaitingForHatch = false
 local HatchRunning = false
-
+local LearnedEggCapacity = nil
 
 -- =====================================
 -- SELECTED EGGS
@@ -945,6 +945,27 @@ local function GetBackpackEgg()
     return nil
 end
 
+-- =====================================
+-- EGG CAPACITY
+-- =====================================
+
+local function GetMyEggsFolder()
+    local plot = GetMyPlot()
+    if not plot then
+        return nil
+    end
+
+    return plot:FindFirstChild("Eggs")
+end
+
+local function GetEggCount()
+    local eggsFolder = GetMyEggsFolder()
+    if not eggsFolder then
+        return 0
+    end
+
+    return #eggsFolder:GetChildren()
+end
 
 -- =====================================
 -- HATCH PROMPT
@@ -996,42 +1017,39 @@ local function GetHatchPrompt()
 end
 
 
--- =====================================
--- AUTO PLACE
--- =====================================
+    -- =================================
+    -- CHECK PLACEMENT RESULT
+    -- =================================
 
-local function PlaceSelectedEgg()
+    if egg.Parent == Player.Character then
 
-    if not AutoPlaceEnabled then
+        local currentEggCount = GetEggCount()
+
+        humanoid:UnequipTools()
+
+        LearnedEggCapacity = currentEggCount
+        WaitingForHatch = true
+
+        print(
+            "Placement failed. Eggs inside Plot > Eggs:",
+            currentEggCount
+        )
+
         return false
     end
 
 
-    if StealingRunning then
-        return false
-    end
+    -- =================================
+    -- SUCCESS
+    -- =================================
 
+    WaitingForHatch = false
 
-    if WaitingForHatch then
-        return false
-    end
+    print(
+        "Egg placed successfully. Continuing placement."
+    )
 
-
-    local egg =
-        GetBackpackEgg()
-
-    if not egg then
-        return false
-    end
-
-
-    local humanoid =
-        GetHumanoid()
-
-    if not humanoid then
-        return false
-    end
-
+    return true
 
     -- =================================
     -- EQUIP
