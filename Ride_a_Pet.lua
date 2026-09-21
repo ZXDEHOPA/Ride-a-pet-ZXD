@@ -912,6 +912,16 @@ end
 -- BACKPACK EGG
 -- =====================================
 
+local RarityOrder = {
+    ["Cherub Egg"] = 1,
+    ["Solaris Egg"] = 2,
+    ["Blackhole Egg"] = 3,
+    ["Aurora Egg"] = 4,
+    ["Soul Egg"] = 5,
+    ["Sinister Egg"] = 6
+}
+
+
 local function GetBackpackEgg()
 
     local backpack =
@@ -924,6 +934,8 @@ local function GetBackpackEgg()
     end
 
 
+    local availableEggs = {}
+
     for _, eggName in ipairs(Eggs) do
 
         if SelectedPlaceEggs[eggName] then
@@ -934,7 +946,12 @@ local function GetBackpackEgg()
                 )
 
             if egg then
-                return egg
+
+                table.insert(
+                    availableEggs,
+                    egg
+                )
+
             end
 
         end
@@ -942,7 +959,56 @@ local function GetBackpackEgg()
     end
 
 
-    return nil
+    if #availableEggs == 0 then
+        return nil
+    end
+
+
+    -- =================================
+    -- RARITY PREFERENCE
+    -- =================================
+
+    if RarityPreference == "Most Rarest" then
+
+        table.sort(
+            availableEggs,
+            function(a, b)
+
+                return
+                    RarityOrder[a.Name]
+                    <
+                    RarityOrder[b.Name]
+
+            end
+        )
+
+    elseif RarityPreference == "Least Rarest" then
+
+        table.sort(
+            availableEggs,
+            function(a, b)
+
+                return
+                    RarityOrder[a.Name]
+                    >
+                    RarityOrder[b.Name]
+
+            end
+        )
+
+    end
+
+
+    -- =================================
+    -- WEIGHT PREFERENCE
+    -- =================================
+
+    -- Weight sorting will be added here
+    -- once the egg weight value/location
+    -- is confirmed.
+
+
+    return availableEggs[1]
 end
 
 -- =====================================
@@ -1344,6 +1410,65 @@ Tab:CreateDropdown({
     end
 })
 
+-- =====================================
+-- WEIGHT PREFERENCE
+-- =====================================
+
+Tab:CreateDropdown({
+
+    Name = "Weight Preference",
+
+    Options = {
+        "None",
+        "Lowest Weight",
+        "Highest Weight"
+    },
+
+    CurrentOption = {
+        "None"
+    },
+
+    MultipleOptions = false,
+
+    Flag = "WeightPreference",
+
+    Callback = function(Option)
+
+        WeightPreference =
+            Option[1]
+
+    end
+})
+
+-- =====================================
+-- RARITY PREFERENCE
+-- =====================================
+
+Tab:CreateDropdown({
+
+    Name = "Rarity Preference",
+
+    Options = {
+        "None",
+        "Least Rarest",
+        "Most Rarest"
+    },
+
+    CurrentOption = {
+        "None"
+    },
+
+    MultipleOptions = false,
+
+    Flag = "RarityPreference",
+
+    Callback = function(Option)
+
+        RarityPreference =
+            Option[1]
+
+    end
+})
 
 -- =====================================
 -- AUTO PLACE
