@@ -504,7 +504,7 @@ local function RunStealingEgg()
 
 
 -- =================================
--- WAYPOINT POSITIONS
+-- 10 WAYPOINTS
 -- =================================
 
 local waypoint1 =
@@ -569,110 +569,32 @@ local waypoint10 =
 
 
 -- =================================
--- WAYPOINT TELEPORT FUNCTION
+-- WAYPOINT FUNCTION
 -- =================================
 
-local function TeleportToWaypoint(position)
+local function DoWaypoint(position)
 
     if not StealingEnabled then
         return false
     end
 
-    local character =
-        Player.Character
-
-    if not character then
-        return false
-    end
-
-    local root =
+    local currentRoot =
         GetRoot()
 
-    if not root then
+    if not currentRoot then
         return false
     end
 
+    currentRoot.CFrame =
+        CFrame.new(position)
 
-    -- Create temporary platform
-    local platform =
-        Instance.new("Part")
-
-    platform.Name =
-        "StealingWaypointPlatform"
-
-    platform.Size =
-        Vector3.new(
-            8,
-            1,
-            8
-        )
-
-    platform.Transparency =
-        1
-
-    platform.CanCollide =
-        true
-
-    platform.CanTouch =
-        false
-
-    platform.CanQuery =
-        false
-
-    platform.Anchored =
-        true
-
-    platform.CFrame =
-        CFrame.new(
-            position
-            - Vector3.new(
-                0,
-                3,
-                0
-            )
-        )
-
-    platform.Parent =
-        workspace
-
-
-    -- Refresh character/root
-    character =
-        Player.Character
-
-    root =
-        GetRoot()
-
-    if not character or not root then
-
-        platform:Destroy()
-
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
         return false
     end
 
-
-    -- Force teleport
-    character:PivotTo(
-        CFrame.new(
-            position
-        )
-    )
-
-
-    -- Wait while standing on platform
-    local success =
-        WaitStealing(
-            WAYPOINT_WAIT
-        )
-
-
-    -- Remove platform
-    if platform then
-        platform:Destroy()
-    end
-
-
-    return success
+    return true
 end
 
 
@@ -680,7 +602,7 @@ end
 -- WAYPOINT 1
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint1
 ) then
 
@@ -694,7 +616,7 @@ end
 -- WAYPOINT 2
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint2
 ) then
 
@@ -708,7 +630,7 @@ end
 -- WAYPOINT 3
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint3
 ) then
 
@@ -722,7 +644,7 @@ end
 -- WAYPOINT 4
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint4
 ) then
 
@@ -736,7 +658,7 @@ end
 -- WAYPOINT 5
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint5
 ) then
 
@@ -750,7 +672,7 @@ end
 -- WAYPOINT 6
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint6
 ) then
 
@@ -764,7 +686,7 @@ end
 -- WAYPOINT 7
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint7
 ) then
 
@@ -778,7 +700,7 @@ end
 -- WAYPOINT 8
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint8
 ) then
 
@@ -792,7 +714,7 @@ end
 -- WAYPOINT 9
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint9
 ) then
 
@@ -806,7 +728,7 @@ end
 -- WAYPOINT 10
 -- =================================
 
-if not TeleportToWaypoint(
+if not DoWaypoint(
     waypoint10
 ) then
 
