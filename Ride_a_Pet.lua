@@ -79,7 +79,7 @@ local SelectedPlaceEggs = {
 
 local LOAD_WAIT = 3
 local AFTER_EGG_WAIT = 1
-local WAYPOINT_WAIT = 1
+local WAYPOINT_WAIT = 0.5
 local NEAR_FENCE_WAIT = 10
 local WALK_DISTANCE = 8
 
@@ -510,43 +510,18 @@ local function RunStealingEgg()
     -- gradually between the two points.
     -- =================================
 
-    local waypoint1 =
-        startPosition:Lerp(
-            fencePoint,
-            0.1429
-        )
-
-    local waypoint2 =
-        startPosition:Lerp(
-            fencePoint,
-            0.2857
-        )
-
-    local waypoint3 =
-        startPosition:Lerp(
-            fencePoint,
-            0.4286
-        )
-
-    local waypoint4 =
-        startPosition:Lerp(
-            fencePoint,
-            0.5714
-        )
-
-    local waypoint5 =
-        startPosition:Lerp(
-            fencePoint,
-            0.7143
-        ) 
-
-        local waypoint6 =
-        startPosition:Lerp(
-            fencePoint,
-            0.8571
-        )
-
-    -- =================================
+local waypoint1 = startPosition:Lerp(fencePoint, 0.0909)
+local waypoint2 = startPosition:Lerp(fencePoint, 0.1818)
+local waypoint3 = startPosition:Lerp(fencePoint, 0.2727)
+local waypoint4 = startPosition:Lerp(fencePoint, 0.3636)
+local waypoint5 = startPosition:Lerp(fencePoint, 0.4545)
+local waypoint6 = startPosition:Lerp(fencePoint, 0.5455)
+local waypoint7 = startPosition:Lerp(fencePoint, 0.6364)
+local waypoint8 = startPosition:Lerp(fencePoint, 0.7273)
+local waypoint9 = startPosition:Lerp(fencePoint, 0.8182)
+local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
+    
+       -- =================================
     -- WAYPOINT 1
     -- =================================
 
@@ -564,12 +539,10 @@ local function RunStealingEgg()
         return
     end
 
-
     root.CFrame =
         CFrame.new(waypoint1)
 
     root.Anchored = true
-
 
     if not WaitStealing(
         WAYPOINT_WAIT
@@ -580,7 +553,6 @@ local function RunStealingEgg()
 
         return
     end
-
 
     root.Anchored = false
 
@@ -603,12 +575,10 @@ local function RunStealingEgg()
         return
     end
 
-
     root.CFrame =
         CFrame.new(waypoint2)
 
     root.Anchored = true
-
 
     if not WaitStealing(
         WAYPOINT_WAIT
@@ -619,7 +589,6 @@ local function RunStealingEgg()
 
         return
     end
-
 
     root.Anchored = false
 
@@ -642,12 +611,10 @@ local function RunStealingEgg()
         return
     end
 
-
     root.CFrame =
         CFrame.new(waypoint3)
 
     root.Anchored = true
-
 
     if not WaitStealing(
         WAYPOINT_WAIT
@@ -658,7 +625,6 @@ local function RunStealingEgg()
 
         return
     end
-
 
     root.Anchored = false
 
@@ -681,12 +647,10 @@ local function RunStealingEgg()
         return
     end
 
-
     root.CFrame =
         CFrame.new(waypoint4)
 
     root.Anchored = true
-
 
     if not WaitStealing(
         WAYPOINT_WAIT
@@ -697,7 +661,6 @@ local function RunStealingEgg()
 
         return
     end
-
 
     root.Anchored = false
 
@@ -720,12 +683,10 @@ local function RunStealingEgg()
         return
     end
 
-
     root.CFrame =
         CFrame.new(waypoint5)
 
     root.Anchored = true
-
 
     if not WaitStealing(
         WAYPOINT_WAIT
@@ -737,9 +698,9 @@ local function RunStealingEgg()
         return
     end
 
-
     root.Anchored = false
-    
+
+
     -- =================================
     -- WAYPOINT 6
     -- =================================
@@ -758,12 +719,10 @@ local function RunStealingEgg()
         return
     end
 
-
     root.CFrame =
         CFrame.new(waypoint6)
 
     root.Anchored = true
-
 
     if not WaitStealing(
         WAYPOINT_WAIT
@@ -775,6 +734,149 @@ local function RunStealingEgg()
         return
     end
 
+    root.Anchored = false
+
+
+    -- =================================
+    -- WAYPOINT 7
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint7)
+
+    root.Anchored = true
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
+
+    root.Anchored = false
+
+
+    -- =================================
+    -- WAYPOINT 8
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint8)
+
+    root.Anchored = true
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
+
+    root.Anchored = false
+
+
+    -- =================================
+    -- WAYPOINT 9
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint9)
+
+    root.Anchored = true
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
+
+    root.Anchored = false
+
+
+    -- =================================
+    -- WAYPOINT 10
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint10)
+
+    root.Anchored = true
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
 
     root.Anchored = false
 
