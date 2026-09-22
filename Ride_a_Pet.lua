@@ -504,10 +504,7 @@ local function RunStealingEgg()
 
 
     -- =================================
-    -- 5 GRADUAL WAYPOINTS
-    --
-    -- Lerp changes X, Y and Z
-    -- gradually between the two points.
+    -- WAYPOINTS
     -- =================================
 
 local waypoint1 = startPosition:Lerp(fencePoint, 0.0909)
@@ -521,7 +518,7 @@ local waypoint8 = startPosition:Lerp(fencePoint, 0.7273)
 local waypoint9 = startPosition:Lerp(fencePoint, 0.8182)
 local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
     
-       -- =================================
+    -- =================================
     -- WAYPOINT 1
     -- =================================
 
@@ -782,10 +779,6 @@ local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
 
     if not root or not StealingEnabled then
 
-        if root then
-            root.Anchored = false
-        end
-
         StealingRunning = false
 
         return
@@ -794,19 +787,14 @@ local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
     root.CFrame =
         CFrame.new(waypoint8)
 
-    root.Anchored = true
-
     if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
-        root.Anchored = false
         StealingRunning = false
 
         return
     end
-
-    root.Anchored = false
 
 
     -- =================================
@@ -818,10 +806,6 @@ local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
 
     if not root or not StealingEnabled then
 
-        if root then
-            root.Anchored = false
-        end
-
         StealingRunning = false
 
         return
@@ -830,19 +814,14 @@ local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
     root.CFrame =
         CFrame.new(waypoint9)
 
-    root.Anchored = true
-
     if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
-        root.Anchored = false
         StealingRunning = false
 
         return
     end
-
-    root.Anchored = false
 
 
     -- =================================
@@ -854,10 +833,6 @@ local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
 
     if not root or not StealingEnabled then
 
-        if root then
-            root.Anchored = false
-        end
-
         StealingRunning = false
 
         return
@@ -866,19 +841,14 @@ local waypoint10 = startPosition:Lerp(fencePoint, 0.9091)
     root.CFrame =
         CFrame.new(waypoint10)
 
-    root.Anchored = true
-
     if not WaitStealing(
         WAYPOINT_WAIT
     ) then
 
-        root.Anchored = false
         StealingRunning = false
 
         return
     end
-
-    root.Anchored = false
 
     -- =================================
     -- RECALCULATE FENCE
