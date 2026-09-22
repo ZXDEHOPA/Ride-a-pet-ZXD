@@ -534,42 +534,50 @@ local function RunStealingEgg()
         ).Magnitude
 
 
-  -- =================================
+-- =================================
 -- 5 WAYPOINTS
+-- GRADUAL X / Y / Z MOVEMENT
 -- =================================
 
+local targetPosition =
+    fencePoint
+
 local waypoint1 =
-    startPosition
-    + direction
-    * (totalDistance * 0.1667)
+    startPosition:Lerp(
+        targetPosition,
+        0.1667
+    )
 
 local waypoint2 =
-    startPosition
-    + direction
-    * (totalDistance * 0.3333)
+    startPosition:Lerp(
+        targetPosition,
+        0.3333
+    )
 
 local waypoint3 =
-    startPosition
-    + direction
-    * (totalDistance * 0.5000)
+    startPosition:Lerp(
+        targetPosition,
+        0.5000
+    )
 
 local waypoint4 =
-    startPosition
-    + direction
-    * (totalDistance * 0.6667)
+    startPosition:Lerp(
+        targetPosition,
+        0.6667
+    )
 
 local waypoint5 =
-    startPosition
-    + direction
-    * (totalDistance * 0.8333)
+    startPosition:Lerp(
+        targetPosition,
+        0.8333
+    )
 
 
 -- =================================
 -- WAYPOINT 1
 -- =================================
 
-root =
-    GetRoot()
+root = GetRoot()
 
 if not root or not StealingEnabled then
     if root then
@@ -601,8 +609,7 @@ root.Anchored = false
 -- WAYPOINT 2
 -- =================================
 
-root =
-    GetRoot()
+root = GetRoot()
 
 if not root or not StealingEnabled then
     if root then
@@ -634,8 +641,7 @@ root.Anchored = false
 -- WAYPOINT 3
 -- =================================
 
-root =
-    GetRoot()
+root = GetRoot()
 
 if not root or not StealingEnabled then
     if root then
@@ -667,8 +673,7 @@ root.Anchored = false
 -- WAYPOINT 4
 -- =================================
 
-root =
-    GetRoot()
+root = GetRoot()
 
 if not root or not StealingEnabled then
     if root then
@@ -700,8 +705,7 @@ root.Anchored = false
 -- WAYPOINT 5
 -- =================================
 
-root =
-    GetRoot()
+root = GetRoot()
 
 if not root or not StealingEnabled then
     if root then
@@ -727,7 +731,7 @@ if not WaitStealing(
 end
 
 root.Anchored = false
-
+    
     -- =================================
     -- RECALCULATE FENCE
     -- =================================
