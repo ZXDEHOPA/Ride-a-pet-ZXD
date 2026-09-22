@@ -52,15 +52,13 @@ local StealingRunning = false
 local AutoPlaceEnabled = false
 local AutoHatchEnabled = false
 
-local WeightPreference = "None"
-local RarityPreference = "None"
-
 local LuckEnabled = false
 local LuckMode = "One Time"
 
 local WaitingForHatch = false
 local HatchRunning = false
 local LearnedEggCapacity = nil
+
 
 -- =====================================
 -- SELECTED EGGS
@@ -307,6 +305,10 @@ local function StopMovement()
 
     if humanoid and root then
 
+        -- Make sure the player is never
+        -- left anchored after stopping.
+        root.Anchored = false
+
         humanoid:Move(
             Vector3.zero,
             false
@@ -451,9 +453,6 @@ local function RunStealingEgg()
     fireproximityprompt(prompt)
 
 
-    -- UPDATED:
-    -- AFTER_EGG_WAIT = 1
-
     if not WaitStealing(
         AFTER_EGG_WAIT
     ) then
@@ -504,18 +503,56 @@ local function RunStealingEgg()
         )
 
 
-    local direction =
-        fencePoint - startPosition
+    -- =================================
+    -- 5 GRADUAL WAYPOINTS
+    --
+    -- Lerp changes X, Y and Z
+    -- gradually between the two points.
+    -- =================================
 
-    direction =
-        Vector3.new(
-            direction.X,
-            0,
-            direction.Z
+    local waypoint1 =
+        startPosition:Lerp(
+            fencePoint,
+            0.1667
+        )
+
+    local waypoint2 =
+        startPosition:Lerp(
+            fencePoint,
+            0.3333
+        )
+
+    local waypoint3 =
+        startPosition:Lerp(
+            fencePoint,
+            0.5000
+        )
+
+    local waypoint4 =
+        startPosition:Lerp(
+            fencePoint,
+            0.6667
+        )
+
+    local waypoint5 =
+        startPosition:Lerp(
+            fencePoint,
+            0.8333
         )
 
 
-    if direction.Magnitude < 0.1 then
+    -- =================================
+    -- WAYPOINT 1
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
 
         StealingRunning = false
 
@@ -523,215 +560,182 @@ local function RunStealingEgg()
     end
 
 
-    direction =
-        direction.Unit
+    root.CFrame =
+        CFrame.new(waypoint1)
+
+    root.Anchored = true
 
 
-    local totalDistance =
-        (
-            fencePoint
-            - startPosition
-        ).Magnitude
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
 
-
--- =================================
--- 5 WAYPOINTS
--- GRADUAL X / Y / Z MOVEMENT
--- =================================
-
-local targetPosition =
-    fencePoint
-
-local waypoint1 =
-    startPosition:Lerp(
-        targetPosition,
-        0.1667
-    )
-
-local waypoint2 =
-    startPosition:Lerp(
-        targetPosition,
-        0.3333
-    )
-
-local waypoint3 =
-    startPosition:Lerp(
-        targetPosition,
-        0.5000
-    )
-
-local waypoint4 =
-    startPosition:Lerp(
-        targetPosition,
-        0.6667
-    )
-
-local waypoint5 =
-    startPosition:Lerp(
-        targetPosition,
-        0.8333
-    )
-
-
--- =================================
--- WAYPOINT 1
--- =================================
-
-root = GetRoot()
-
-if not root or not StealingEnabled then
-    if root then
         root.Anchored = false
+        StealingRunning = false
+
+        return
     end
 
-    StealingRunning = false
-    return
-end
-
-root.CFrame =
-    CFrame.new(waypoint1)
-
-root.Anchored = true
-
-if not WaitStealing(
-    WAYPOINT_WAIT
-) then
 
     root.Anchored = false
-    StealingRunning = false
-    return
-end
-
-root.Anchored = false
 
 
--- =================================
--- WAYPOINT 2
--- =================================
+    -- =================================
+    -- WAYPOINT 2
+    -- =================================
 
-root = GetRoot()
+    root =
+        GetRoot()
 
-if not root or not StealingEnabled then
-    if root then
-        root.Anchored = false
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
     end
 
-    StealingRunning = false
-    return
-end
 
-root.CFrame =
-    CFrame.new(waypoint2)
+    root.CFrame =
+        CFrame.new(waypoint2)
 
-root.Anchored = true
-
-if not WaitStealing(
-    WAYPOINT_WAIT
-) then
-
-    root.Anchored = false
-    StealingRunning = false
-    return
-end
-
-root.Anchored = false
+    root.Anchored = true
 
 
--- =================================
--- WAYPOINT 3
--- =================================
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
 
-root = GetRoot()
-
-if not root or not StealingEnabled then
-    if root then
         root.Anchored = false
+        StealingRunning = false
+
+        return
     end
 
-    StealingRunning = false
-    return
-end
-
-root.CFrame =
-    CFrame.new(waypoint3)
-
-root.Anchored = true
-
-if not WaitStealing(
-    WAYPOINT_WAIT
-) then
 
     root.Anchored = false
-    StealingRunning = false
-    return
-end
-
-root.Anchored = false
 
 
--- =================================
--- WAYPOINT 4
--- =================================
+    -- =================================
+    -- WAYPOINT 3
+    -- =================================
 
-root = GetRoot()
+    root =
+        GetRoot()
 
-if not root or not StealingEnabled then
-    if root then
-        root.Anchored = false
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
     end
 
-    StealingRunning = false
-    return
-end
 
-root.CFrame =
-    CFrame.new(waypoint4)
+    root.CFrame =
+        CFrame.new(waypoint3)
 
-root.Anchored = true
-
-if not WaitStealing(
-    WAYPOINT_WAIT
-) then
-
-    root.Anchored = false
-    StealingRunning = false
-    return
-end
-
-root.Anchored = false
+    root.Anchored = true
 
 
--- =================================
--- WAYPOINT 5
--- =================================
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
 
-root = GetRoot()
-
-if not root or not StealingEnabled then
-    if root then
         root.Anchored = false
+        StealingRunning = false
+
+        return
     end
 
-    StealingRunning = false
-    return
-end
-
-root.CFrame =
-    CFrame.new(waypoint5)
-
-root.Anchored = true
-
-if not WaitStealing(
-    WAYPOINT_WAIT
-) then
 
     root.Anchored = false
-    StealingRunning = false
-    return
-end
 
-root.Anchored = false
-    
+
+    -- =================================
+    -- WAYPOINT 4
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+
+    root.CFrame =
+        CFrame.new(waypoint4)
+
+    root.Anchored = true
+
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
+
+
+    root.Anchored = false
+
+
+    -- =================================
+    -- WAYPOINT 5
+    -- =================================
+
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+
+    root.CFrame =
+        CFrame.new(waypoint5)
+
+    root.Anchored = true
+
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
+
+
+    root.Anchored = false
+
+
     -- =================================
     -- RECALCULATE FENCE
     -- =================================
@@ -743,6 +747,10 @@ root.Anchored = false
         GetFence()
 
     if not root or not fence then
+
+        if root then
+            root.Anchored = false
+        end
 
         StealingRunning = false
 
@@ -969,16 +977,6 @@ end
 -- BACKPACK EGG
 -- =====================================
 
-local RarityOrder = {
-    ["Cherub Egg"] = 1,
-    ["Solaris Egg"] = 2,
-    ["Blackhole Egg"] = 3,
-    ["Aurora Egg"] = 4,
-    ["Soul Egg"] = 5,
-    ["Sinister Egg"] = 6
-}
-
-
 local function GetBackpackEgg()
 
     local backpack =
@@ -991,8 +989,6 @@ local function GetBackpackEgg()
     end
 
 
-    local availableEggs = {}
-
     for _, eggName in ipairs(Eggs) do
 
         if SelectedPlaceEggs[eggName] then
@@ -1003,12 +999,7 @@ local function GetBackpackEgg()
                 )
 
             if egg then
-
-                table.insert(
-                    availableEggs,
-                    egg
-                )
-
+                return egg
             end
 
         end
@@ -1016,122 +1007,19 @@ local function GetBackpackEgg()
     end
 
 
-    if #availableEggs == 0 then
-        return nil
-    end
-
-
-    -- =================================
-    -- RARITY PREFERENCE
-    -- =================================
-
-    if RarityPreference == "Most Rarest" then
-
-        table.sort(
-            availableEggs,
-            function(a, b)
-
-                return
-                    RarityOrder[a.Name]
-                    <
-                    RarityOrder[b.Name]
-
-            end
-        )
-
-    elseif RarityPreference == "Least Rarest" then
-
-        table.sort(
-            availableEggs,
-            function(a, b)
-
-                return
-                    RarityOrder[a.Name]
-                    >
-                    RarityOrder[b.Name]
-
-            end
-        )
-
-    end
-
-
--- =================================
--- WEIGHT PREFERENCE
--- =================================
-
-if WeightPreference == "Lowest Weight" then
-
-    table.sort(
-        availableEggs,
-        function(a, b)
-
-            local dataA = a:FindFirstChild("Data")
-            local dataB = b:FindFirstChild("Data")
-
-            local weightA =
-                dataA
-                and dataA:FindFirstChild("Weight")
-
-            local weightB =
-                dataB
-                and dataB:FindFirstChild("Weight")
-
-            if not weightA then
-                return false
-            end
-
-            if not weightB then
-                return true
-            end
-
-            return weightA.Value < weightB.Value
-
-        end
-    )
-
-elseif WeightPreference == "Highest Weight" then
-
-    table.sort(
-        availableEggs,
-        function(a, b)
-
-            local dataA = a:FindFirstChild("Data")
-            local dataB = b:FindFirstChild("Data")
-
-            local weightA =
-                dataA
-                and dataA:FindFirstChild("Weight")
-
-            local weightB =
-                dataB
-                and dataB:FindFirstChild("Weight")
-
-            if not weightA then
-                return false
-            end
-
-            if not weightB then
-                return true
-            end
-
-            return weightA.Value > weightB.Value
-
-        end
-    )
-
+    return nil
 end
 
-
-    return availableEggs[1]
-end
 
 -- =====================================
 -- EGG CAPACITY
 -- =====================================
 
 local function GetMyEggsFolder()
-    local plot = GetMyPlot()
+
+    local plot =
+        GetMyPlot()
+
     if not plot then
         return nil
     end
@@ -1139,14 +1027,19 @@ local function GetMyEggsFolder()
     return plot:FindFirstChild("Eggs")
 end
 
+
 local function GetEggCount()
-    local eggsFolder = GetMyEggsFolder()
+
+    local eggsFolder =
+        GetMyEggsFolder()
+
     if not eggsFolder then
         return 0
     end
 
     return #eggsFolder:GetChildren()
 end
+
 
 -- =====================================
 -- HATCH PROMPT
@@ -1525,65 +1418,6 @@ Tab:CreateDropdown({
     end
 })
 
--- =====================================
--- WEIGHT PREFERENCE
--- =====================================
-
-Tab:CreateDropdown({
-
-    Name = "Weight Preference",
-
-    Options = {
-        "None",
-        "Lowest Weight",
-        "Highest Weight"
-    },
-
-    CurrentOption = {
-        "None"
-    },
-
-    MultipleOptions = false,
-
-    Flag = "WeightPreference",
-
-    Callback = function(Option)
-
-        WeightPreference =
-            Option[1]
-
-    end
-})
-
--- =====================================
--- RARITY PREFERENCE
--- =====================================
-
-Tab:CreateDropdown({
-
-    Name = "Rarity Preference",
-
-    Options = {
-        "None",
-        "Least Rarest",
-        "Most Rarest"
-    },
-
-    CurrentOption = {
-        "None"
-    },
-
-    MultipleOptions = false,
-
-    Flag = "RarityPreference",
-
-    Callback = function(Option)
-
-        RarityPreference =
-            Option[1]
-
-    end
-})
 
 -- =====================================
 -- AUTO PLACE
