@@ -513,33 +513,38 @@ local function RunStealingEgg()
     local waypoint1 =
         startPosition:Lerp(
             fencePoint,
-            0.1667
+            0.1429
         )
 
     local waypoint2 =
         startPosition:Lerp(
             fencePoint,
-            0.3333
+            0.2857
         )
 
     local waypoint3 =
         startPosition:Lerp(
             fencePoint,
-            0.5000
+            0.4286
         )
 
     local waypoint4 =
         startPosition:Lerp(
             fencePoint,
-            0.6667
+            0.5714
         )
 
     local waypoint5 =
         startPosition:Lerp(
             fencePoint,
-            0.8333
-        )
+            0.7143
+        ) 
 
+        local waypoint6 =
+        startPosition:Lerp(
+            fencePoint,
+            0.8571
+        )
 
     -- =================================
     -- WAYPOINT 1
@@ -734,7 +739,44 @@ local function RunStealingEgg()
 
 
     root.Anchored = false
+    
+    -- =================================
+    -- WAYPOINT 6
+    -- =================================
 
+    root =
+        GetRoot()
+
+    if not root or not StealingEnabled then
+
+        if root then
+            root.Anchored = false
+        end
+
+        StealingRunning = false
+
+        return
+    end
+
+
+    root.CFrame =
+        CFrame.new(waypoint6)
+
+    root.Anchored = true
+
+
+    if not WaitStealing(
+        WAYPOINT_WAIT
+    ) then
+
+        root.Anchored = false
+        StealingRunning = false
+
+        return
+    end
+
+
+    root.Anchored = false
 
     -- =================================
     -- RECALCULATE FENCE
