@@ -98,9 +98,9 @@ local SelectedPlaceEggs = {
 local LOAD_WAIT = 3
 local AFTER_EGG_WAIT = 1
 
-local WAYPOINT_WAIT = 1
+local WAYPOINT_WAIT = 0.75
 
-local NEAR_FENCE_WAIT = 10
+local NEAR_FENCE_WAIT = 7
 local WALK_DISTANCE = 8
 
 -- =====================================
