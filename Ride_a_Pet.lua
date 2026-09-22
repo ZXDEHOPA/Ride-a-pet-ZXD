@@ -1,267 +1,181 @@
-local Rayfield =
-    loadstring(
-        game:HttpGet(
-            "https://sirius.menu/rayfield"
-        )
-    )()
+-- Ride a Pet
+-- Complete rewritten version
 
-local Players =
-    game:GetService("Players")
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
-local ReplicatedStorage =
-    game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Player =
-    Players.LocalPlayer
-
+local Player = Players.LocalPlayer
 
 -- =====================================
 -- WINDOW
 -- =====================================
 
-local Window =
-    Rayfield:CreateWindow({
+local Window = Rayfield:CreateWindow({
+    Name = "Ride a Pet",
+    LoadingTitle = "Ride a Pet",
+    LoadingSubtitle = "By ZXD",
 
-        Name = "Ride a Pet",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
 
-        LoadingTitle = "Ride a Pet",
-
-        LoadingSubtitle = "By ZXD",
-
-        ConfigurationSaving = {
-            Enabled = false
-        }
-
-    })
-
-
-local Tab =
-    Window:CreateTab(
-        "Main Menu"
-    )
-
+local Tab = Window:CreateTab("Main Menu")
 
 -- =====================================
 -- REMOTES
 -- =====================================
 
 local Upgrades =
-    ReplicatedStorage
-        .Remotes
-        .Game
-        .Plot
-        .Upgrades
+    ReplicatedStorage.Remotes.Game.Plot.Upgrades
 
 local EggPlaced =
-    ReplicatedStorage
-        .Remotes
-        .Game
-        .EggPlaced
-
+    ReplicatedStorage.Remotes.Game.EggPlaced
 
 -- =====================================
--- EGG LIST
+-- EGGS
 -- =====================================
 
 local Eggs = {
-
     "Cherub Egg",
-
     "Solaris Egg",
-
     "Blackhole Egg",
-
     "Aurora Egg",
-
     "Soul Egg",
-
     "Sinister Egg"
-
 }
-
 
 -- =====================================
 -- RARITY ORDER
 -- =====================================
 
 local RarityOrder = {
-
     ["Cherub Egg"] = 1,
-
     ["Solaris Egg"] = 2,
-
     ["Blackhole Egg"] = 3,
-
     ["Aurora Egg"] = 4,
-
     ["Soul Egg"] = 5,
-
     ["Sinister Egg"] = 6
-
 }
-
 
 -- =====================================
 -- STATES
 -- =====================================
 
-local StealingEnabled =
-    false
+local StealingEnabled = false
+local StealingRunning = false
 
-local StealingRunning =
-    false
+local AutoPlaceEnabled = false
+local AutoHatchEnabled = false
 
+local LuckEnabled = false
+local LuckMode = "One Time"
 
-local AutoPlaceEnabled =
-    false
+local WaitingForHatch = false
+local HatchRunning = false
 
-local AutoHatchEnabled =
-    false
-
-
-local WeightPreference =
-    "None"
-
-local RarityPreference =
-    "None"
-
-
-local LuckEnabled =
-    false
-
-local LuckMode =
-    "One Time"
-
-
-local WaitingForHatch =
-    false
-
-local HatchRunning =
-    false
-
-local LearnedEggCapacity =
-    nil
-
+local WeightPreference = "None"
+local RarityPreference = "None"
 
 -- =====================================
 -- SELECTED EGGS
 -- =====================================
 
 local SelectedStealingEggs = {
-
     ["Cherub Egg"] = true
-
 }
-
 
 local SelectedPlaceEggs = {
-
     ["Cherub Egg"] = true
-
 }
-
 
 -- =====================================
 -- STEALING SETTINGS
 -- =====================================
 
-local LOAD_WAIT =
-    3
+local LOAD_WAIT = 3
+local AFTER_EGG_WAIT = 1
 
-local AFTER_EGG_WAIT =
-    1
+local WAYPOINT_WAIT = 1
 
-local WAYPOINT_WAIT =
-    0.75
-
-local NEAR_FENCE_WAIT =
-    7
-
-local WALK_DISTANCE =
-    8
-
+local NEAR_FENCE_WAIT = 10
+local WALK_DISTANCE = 8
 
 -- =====================================
 -- CHARACTER
 -- =====================================
 
-local function GetRoot()
+local function GetCharacter()
+    return Player.Character
+end
 
-    local character =
-        Player.Character
+local function GetRoot()
+    local character = GetCharacter()
 
     if not character then
         return nil
     end
 
-    return character:FindFirstChild(
-        "HumanoidRootPart"
-    )
-
+    return character:FindFirstChild("HumanoidRootPart")
 end
-
 
 local function GetHumanoid()
-
-    local character =
-        Player.Character
+    local character = GetCharacter()
 
     if not character then
         return nil
     end
 
-    return character:FindFirstChildOfClass(
-        "Humanoid"
-    )
-
+    return character:FindFirstChildOfClass("Humanoid")
 end
-
 
 local function UnequipCurrentTool()
-
-    local humanoid =
-        GetHumanoid()
+    local humanoid = GetHumanoid()
 
     if humanoid then
-
         humanoid:UnequipTools()
-
     end
-
 end
 
+-- =====================================
+-- STOP MOVEMENT
+-- =====================================
+
+local function StopMovement()
+    local humanoid = GetHumanoid()
+    local root = GetRoot()
+
+    if humanoid and root then
+        humanoid:Move(Vector3.zero, false)
+        humanoid:MoveTo(root.Position)
+    end
+end
 
 -- =====================================
--- RENDERED EGG
--- STEALING ONLY
+-- STEALING EGG
+-- ONLY SEARCH RenderedEggs
 -- =====================================
 
 local function GetSelectedStealingEgg()
-
     local renderedEggs =
-        workspace:FindFirstChild(
-            "RenderedEggs"
-        )
+        workspace:FindFirstChild("RenderedEggs")
 
     if not renderedEggs then
         return nil
     end
 
-
     for _, eggName in ipairs(Eggs) do
 
         if SelectedStealingEggs[eggName] then
 
-            for _, egg in ipairs(
-                renderedEggs:GetChildren()
-            ) do
+            for _, egg in ipairs(renderedEggs:GetChildren()) do
 
                 if egg.Name == eggName
                     and egg:IsA("Model")
                 then
-
                     return egg
-
                 end
 
             end
@@ -270,43 +184,34 @@ local function GetSelectedStealingEgg()
 
     end
 
-
     return nil
-
 end
-
 
 -- =====================================
 -- MODEL POSITION
 -- =====================================
 
-local function GetModelPosition(
-    model
-)
-
-    local cf =
-        model:GetBoundingBox()
+local function GetModelPosition(model)
+    local cf = model:GetBoundingBox()
 
     return cf.Position
-
 end
-
 
 -- =====================================
 -- EGG PROMPT
 -- =====================================
 
-local function GetEggPrompt(
-    egg
-)
+local function GetEggPrompt(egg)
+
+    if not egg then
+        return nil
+    end
 
     return egg:FindFirstChildWhichIsA(
         "ProximityPrompt",
         true
     )
-
 end
-
 
 -- =====================================
 -- FENCE
@@ -320,19 +225,16 @@ local function GetFence()
             true
         )
 
-    if fence
-        and fence:IsA("Model")
-    then
-
+    if fence and fence:IsA("Model") then
         return fence
-
     end
 
-
     return nil
-
 end
 
+-- =====================================
+-- CLOSEST FENCE POINT
+-- =====================================
 
 local function GetClosestFencePoint(
     fence,
@@ -342,16 +244,11 @@ local function GetClosestFencePoint(
     local cf, size =
         fence:GetBoundingBox()
 
-
     local localPosition =
-        cf:PointToObjectSpace(
-            position
-        )
-
+        cf:PointToObjectSpace(position)
 
     local half =
         size / 2
-
 
     local closest =
         Vector3.new(
@@ -373,90 +270,42 @@ local function GetClosestFencePoint(
                 -half.Z,
                 half.Z
             )
-
         )
-
 
     return cf:PointToWorldSpace(
         closest
     )
-
 end
 
+-- =====================================
+-- FENCE CENTER
+-- =====================================
 
-local function GetFenceCenter(
-    fence
-)
+local function GetFenceCenter(fence)
 
     local cf =
         fence:GetBoundingBox()
 
     return cf.Position
-
 end
-
 
 -- =====================================
 -- STEALING WAIT
 -- =====================================
 
-local function WaitStealing(
-    duration
-)
+local function WaitStealing(duration)
 
     local start =
         os.clock()
 
-
     while StealingEnabled
         and os.clock() - start < duration
     do
-
         task.wait(0.05)
-
     end
-
 
     return StealingEnabled
-
 end
-
-
--- =====================================
--- STOP MOVEMENT
--- =====================================
-
-local function StopMovement()
-
-    local humanoid =
-        GetHumanoid()
-
-    local root =
-        GetRoot()
-
-
-    if humanoid
-        and root
-    then
-
-        root.Anchored =
-            false
-
-
-        humanoid:Move(
-            Vector3.zero,
-            false
-        )
-
-
-        humanoid:MoveTo(
-            root.Position
-        )
-
-    end
-
-end
-
 
 -- =====================================
 -- STEALING
@@ -468,44 +317,33 @@ local function RunStealingEgg()
         return
     end
 
-
-    StealingRunning =
-        true
-
+    StealingRunning = true
 
     -- =================================
-    -- FIND RENDERED EGG
+    -- FIND EGG
     -- =================================
 
     local egg =
         GetSelectedStealingEgg()
 
-
     if not egg then
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         task.wait(0.25)
 
         return
-
     end
-
 
     local root =
         GetRoot()
 
-
     if not root then
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
 
     -- =================================
     -- TP #1
@@ -513,34 +351,20 @@ local function RunStealingEgg()
 
     root.CFrame =
         CFrame.new(
-
-            GetModelPosition(
-                egg
-            )
-            + Vector3.new(
-                0,
-                3,
-                0
-            )
-
+            GetModelPosition(egg)
+            + Vector3.new(0, 3, 0)
         )
 
+    if not WaitStealing(LOAD_WAIT) then
 
-    if not WaitStealing(
-        LOAD_WAIT
-    ) then
-
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
 
     -- =================================
     -- TP #2
-    -- RECHECK RENDERED EGG
+    -- RECHECK EGG
     -- =================================
 
     root =
@@ -549,100 +373,64 @@ local function RunStealingEgg()
     egg =
         GetSelectedStealingEgg()
 
+    if not root or not egg then
 
-    if not root
-        or not egg
-    then
-
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
 
     root.CFrame =
         CFrame.new(
-
-            GetModelPosition(
-                egg
-            )
-            + Vector3.new(
-                0,
-                3,
-                0
-            )
-
+            GetModelPosition(egg)
+            + Vector3.new(0, 3, 0)
         )
 
+    if not WaitStealing(LOAD_WAIT) then
 
-    if not WaitStealing(
-        LOAD_WAIT
-    ) then
-
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
 
-
     -- =================================
-    -- FIRE PROMPT
+    -- FIRE EGG PROMPT
     -- =================================
 
     egg =
         GetSelectedStealingEgg()
 
-
     if not egg then
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
 
-
     local prompt =
-        GetEggPrompt(
-            egg
-        )
-
+        GetEggPrompt(egg)
 
     if not prompt then
 
-        warn(
-            "RenderedEggs egg prompt not found"
-        )
+        warn("RenderedEggs egg prompt not found")
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
 
+    fireproximityprompt(prompt)
 
-    fireproximityprompt(
-        prompt
-    )
+    -- =================================
+    -- WAIT AFTER EGG
+    -- =================================
 
+    if not WaitStealing(AFTER_EGG_WAIT) then
 
-    if not WaitStealing(
-        AFTER_EGG_WAIT
-    ) then
-
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
 
     -- =================================
     -- FIND FENCE
@@ -651,38 +439,35 @@ local function RunStealingEgg()
     local fence =
         GetFence()
 
-
     if not fence then
 
-        warn(
-            "Full Fence not found"
-        )
+        warn("Full Fence not found")
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
 
     root =
         GetRoot()
 
-
     if not root then
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
 
+    -- =================================
+    -- START POSITION
+    -- =================================
 
     local startPosition =
         root.Position
 
+    -- =================================
+    -- FIRST FENCE POINT
+    -- =================================
 
     local fencePoint =
         GetClosestFencePoint(
@@ -690,246 +475,355 @@ local function RunStealingEgg()
             startPosition
         )
 
+    -- =================================
+    -- DIRECTION
+    -- =================================
+
+    local direction =
+        fencePoint - startPosition
+
+    direction =
+        Vector3.new(
+            direction.X,
+            0,
+            direction.Z
+        )
+
+    if direction.Magnitude < 0.1 then
+
+        StealingRunning = false
+
+        return
+    end
+
+    direction =
+        direction.Unit
+
+    -- =================================
+    -- TOTAL DISTANCE
+    -- =================================
+
+    local totalDistance =
+        (
+            fencePoint
+            - startPosition
+        ).Magnitude
 
     -- =================================
     -- 10 WAYPOINTS
     -- =================================
 
     local waypoint1 =
-        startPosition:Lerp(
-            fencePoint,
-            0.0909
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.0909)
 
     local waypoint2 =
-        startPosition:Lerp(
-            fencePoint,
-            0.1818
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.1818)
 
     local waypoint3 =
-        startPosition:Lerp(
-            fencePoint,
-            0.2727
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.2727)
 
     local waypoint4 =
-        startPosition:Lerp(
-            fencePoint,
-            0.3636
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.3636)
 
     local waypoint5 =
-        startPosition:Lerp(
-            fencePoint,
-            0.4545
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.4545)
 
     local waypoint6 =
-        startPosition:Lerp(
-            fencePoint,
-            0.5455
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.5455)
 
     local waypoint7 =
-        startPosition:Lerp(
-            fencePoint,
-            0.6364
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.6364)
 
     local waypoint8 =
-        startPosition:Lerp(
-            fencePoint,
-            0.7273
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.7273)
 
     local waypoint9 =
-        startPosition:Lerp(
-            fencePoint,
-            0.8182
-        )
-
+        startPosition
+        + direction
+        * (totalDistance * 0.8182)
 
     local waypoint10 =
-        startPosition:Lerp(
-            fencePoint,
-            0.9091
+        startPosition
+        + direction
+        * (totalDistance * 0.9091)
+
+    -- =================================
+    -- WAYPOINT 1
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint1)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 2
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint2)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 3
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint3)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 4
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint4)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 5
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint5)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 6
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint6)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 7
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint7)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 8
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint8)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 9
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint9)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- WAYPOINT 10
+    -- =================================
+
+    root = GetRoot()
+
+    if not root or not StealingEnabled then
+        StealingRunning = false
+        return
+    end
+
+    root.CFrame =
+        CFrame.new(waypoint10)
+
+    if not WaitStealing(WAYPOINT_WAIT) then
+        StealingRunning = false
+        return
+    end
+
+    -- =================================
+    -- RECALCULATE FENCE
+    -- =================================
+
+    root =
+        GetRoot()
+
+    fence =
+        GetFence()
+
+    if not root or not fence then
+
+        StealingRunning = false
+
+        return
+    end
+
+    fencePoint =
+        GetClosestFencePoint(
+            fence,
+            root.Position
         )
 
-
     -- =================================
-    -- WAYPOINT FUNCTION
-    -- =================================
-
-    local function DoWaypoint(
-        position
-    )
-
-        if not StealingEnabled then
-            return false
-        end
-
-
-        local currentRoot =
-            GetRoot()
-
-
-        if not currentRoot then
-            return false
-        end
-
-
-        currentRoot.CFrame =
-            CFrame.new(
-                position
-            )
-
-
-        if not WaitStealing(
-            WAYPOINT_WAIT
-        ) then
-
-            return false
-
-        end
-
-
-        return true
-
-    end
-
-
-    -- =================================
-    -- WAYPOINTS
+    -- FINAL DIRECTION
     -- =================================
 
-    if not DoWaypoint(
-        waypoint1
-    ) then
+    local finalDirection =
+        fencePoint - root.Position
 
-        StealingRunning =
-            false
+    finalDirection =
+        Vector3.new(
+            finalDirection.X,
+            0,
+            finalDirection.Z
+        )
 
-        return
+    if finalDirection.Magnitude < 0.1 then
 
-    end
-
-
-    if not DoWaypoint(
-        waypoint2
-    ) then
-
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
 
+    finalDirection =
+        finalDirection.Unit
 
-    if not DoWaypoint(
-        waypoint3
+    -- =================================
+    -- NEAR FENCE
+    -- =================================
+
+    local nearFence =
+        fencePoint
+        - finalDirection
+        * WALK_DISTANCE
+
+    root.CFrame =
+        CFrame.new(nearFence)
+
+    -- =================================
+    -- NEAR FENCE WAIT
+    -- =================================
+
+    if not WaitStealing(
+        NEAR_FENCE_WAIT
     ) then
 
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
-
-    if not DoWaypoint(
-        waypoint4
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
-
-    if not DoWaypoint(
-        waypoint5
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
-
-    if not DoWaypoint(
-        waypoint6
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
-
-    if not DoWaypoint(
-        waypoint7
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
-
-    if not DoWaypoint(
-        waypoint8
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
-
-    if not DoWaypoint(
-        waypoint9
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
-
-    if not DoWaypoint(
-        waypoint10
-    ) then
-
-        StealingRunning =
-            false
-
-        return
-
-    end
-
 
     -- =================================
     -- FINAL FENCE TP
@@ -941,32 +835,20 @@ local function RunStealingEgg()
     fence =
         GetFence()
 
+    if not root or not fence then
 
-    if not root
-        or not fence
-    then
-
-        StealingRunning =
-            false
+        StealingRunning = false
 
         return
-
     end
-
 
     root.CFrame =
         CFrame.new(
-            GetFenceCenter(
-                fence
-            )
+            GetFenceCenter(fence)
         )
 
-
-    StealingRunning =
-        false
-
+    StealingRunning = false
 end
-
 
 -- =====================================
 -- MY PLOT
@@ -975,15 +857,11 @@ end
 local function GetMyPlot()
 
     local plotsFolder =
-        workspace:FindFirstChild(
-            "Plots"
-        )
-
+        workspace:FindFirstChild("Plots")
 
     if not plotsFolder then
         return nil
     end
-
 
     for _, plot in ipairs(
         plotsFolder:GetChildren()
@@ -994,41 +872,27 @@ local function GetMyPlot()
         then
 
             local data =
-                plot:FindFirstChild(
-                    "Data"
-                )
-
+                plot:FindFirstChild("Data")
 
             if data then
 
                 local owner =
-                    data:FindFirstChild(
-                        "Owner"
-                    )
-
+                    data:FindFirstChild("Owner")
 
                 if owner
-                    and owner:IsA(
-                        "ObjectValue"
-                    )
+                    and owner:IsA("ObjectValue")
                     and owner.Value == Player
                 then
 
                     return plot
-
                 end
 
             end
-
         end
-
     end
 
-
     return nil
-
 end
-
 
 -- =====================================
 -- BASEPLATE
@@ -1039,33 +903,22 @@ local function GetMyBaseplate()
     local plot =
         GetMyPlot()
 
-
     if not plot then
         return nil
     end
 
-
     local baseplate =
-        plot:FindFirstChild(
-            "Baseplate"
-        )
-
+        plot:FindFirstChild("Baseplate")
 
     if baseplate
-        and baseplate:IsA(
-            "BasePart"
-        )
+        and baseplate:IsA("BasePart")
     then
 
         return baseplate
-
     end
 
-
     return nil
-
 end
-
 
 -- =====================================
 -- RANDOM BASEPLATE POSITION
@@ -1079,277 +932,49 @@ local function GetRandomBaseplatePosition(
         return nil
     end
 
-
     local size =
         baseplate.Size
-
 
     local cf =
         baseplate.CFrame
 
+    -- Keep slightly inside the edges
+    local margin = 1
+
+    local usableX =
+        math.max(
+            size.X - margin * 2,
+            0
+        )
+
+    local usableZ =
+        math.max(
+            size.Z - margin * 2,
+            0
+        )
 
     local x =
         (math.random() - 0.5)
-        * size.X
-
+        * usableX
 
     local z =
         (math.random() - 0.5)
-        * size.Z
-
+        * usableZ
 
     local localPosition =
         Vector3.new(
-
             x,
-
             size.Y / 2 + 0.1,
-
             z
-
         )
-
 
     return cf:PointToWorldSpace(
         localPosition
     )
-
 end
 
-
 -- =====================================
--- BACKPACK EGG
--- =====================================
-
-local function GetBackpackEgg()
-
-    local backpack =
-        Player:FindFirstChild(
-            "Backpack"
-        )
-
-
-    if not backpack then
-        return nil
-    end
-
-
-    local availableEggs = {}
-
-
-    -- =================================
-    -- COLLECT AVAILABLE EGGS
-    -- =================================
-
-    for _, eggName in ipairs(
-        Eggs
-    ) do
-
-        if SelectedPlaceEggs[
-            eggName
-        ] then
-
-            local egg =
-                backpack:FindFirstChild(
-                    eggName
-                )
-
-
-            if egg then
-
-                table.insert(
-                    availableEggs,
-                    egg
-                )
-
-            end
-
-        end
-
-    end
-
-
-    if #availableEggs == 0 then
-        return nil
-    end
-
-
-    -- =================================
-    -- SORT PREFERENCE
-    --
-    -- RARITY IS PRIMARY
-    -- WEIGHT IS SECONDARY
-    -- =================================
-
-    if RarityPreference ~= "None"
-        or WeightPreference ~= "None"
-    then
-
-        table.sort(
-            availableEggs,
-
-            function(a, b)
-
-                -- =====================
-                -- RARITY
-                -- =====================
-
-                if RarityPreference ~= "None" then
-
-                    local rarityA =
-                        RarityOrder[
-                            a.Name
-                        ]
-
-                    local rarityB =
-                        RarityOrder[
-                            b.Name
-                        ]
-
-
-                    if rarityA
-                        and rarityB
-                        and rarityA ~= rarityB
-                    then
-
-                        if RarityPreference
-                            == "Most Rarest"
-                        then
-
-                            return rarityA < rarityB
-
-                        elseif RarityPreference
-                            == "Least Rarest"
-                        then
-
-                            return rarityA > rarityB
-
-                        end
-
-                    elseif rarityA
-                        and not rarityB
-                    then
-
-                        return true
-
-                    elseif not rarityA
-                        and rarityB
-                    then
-
-                        return false
-
-                    end
-
-                end
-
-
-                -- =====================
-                -- WEIGHT
-                -- =====================
-
-                if WeightPreference ~= "None" then
-
-                    local dataA =
-                        a:FindFirstChild(
-                            "Data"
-                        )
-
-
-                    local dataB =
-                        b:FindFirstChild(
-                            "Data"
-                        )
-
-
-                    local weightA =
-                        dataA
-                        and dataA:FindFirstChild(
-                            "Weight"
-                        )
-
-
-                    local weightB =
-                        dataB
-                        and dataB:FindFirstChild(
-                            "Weight"
-                        )
-
-
-                    if weightA
-                        and weightB
-                        and weightA.Value
-                            ~= weightB.Value
-                    then
-
-                        if WeightPreference
-                            == "Lowest Weight"
-                        then
-
-                            return weightA.Value
-                                < weightB.Value
-
-                        elseif WeightPreference
-                            == "Highest Weight"
-                        then
-
-                            return weightA.Value
-                                > weightB.Value
-
-                        end
-
-                    elseif weightA
-                        and not weightB
-                    then
-
-                        return true
-
-                    elseif not weightA
-                        and weightB
-                    then
-
-                        return false
-
-                    end
-
-                end
-
-
-                -- =====================
-                -- ORIGINAL EGG ORDER
-                -- =====================
-
-                local orderA =
-                    table.find(
-                        Eggs,
-                        a.Name
-                    )
-
-
-                local orderB =
-                    table.find(
-                        Eggs,
-                        b.Name
-                    )
-
-
-                return
-                    (orderA or math.huge)
-                    <
-                    (orderB or math.huge)
-
-            end
-        )
-
-    end
-
-
-    return availableEggs[1]
-
-end
-
-
--- =====================================
--- EGG CAPACITY
+-- MY EGG FOLDER
 -- =====================================
 
 local function GetMyEggsFolder()
@@ -1357,34 +982,203 @@ local function GetMyEggsFolder()
     local plot =
         GetMyPlot()
 
-
     if not plot then
         return nil
     end
 
-
-    return plot:FindFirstChild(
-        "Eggs"
-    )
-
+    return plot:FindFirstChild("Eggs")
 end
 
+-- =====================================
+-- EGG COUNT
+-- =====================================
 
 local function GetEggCount()
 
     local eggsFolder =
         GetMyEggsFolder()
 
-
     if not eggsFolder then
         return 0
     end
 
-
     return #eggsFolder:GetChildren()
-
 end
 
+-- =====================================
+-- BACKPACK EGG
+-- RARITY + WEIGHT
+-- =====================================
+
+local function GetBackpackEgg()
+
+    local backpack =
+        Player:FindFirstChild("Backpack")
+
+    if not backpack then
+        return nil
+    end
+
+    local availableEggs = {}
+
+    -- =================================
+    -- FIND SELECTED EGGS
+    -- =================================
+
+    for _, eggName in ipairs(Eggs) do
+
+        if SelectedPlaceEggs[eggName] then
+
+            local egg =
+                backpack:FindFirstChild(
+                    eggName
+                )
+
+            if egg then
+                table.insert(
+                    availableEggs,
+                    egg
+                )
+            end
+
+        end
+
+    end
+
+    if #availableEggs == 0 then
+        return nil
+    end
+
+    -- =================================
+    -- PREFERENCE SORT
+    -- =================================
+
+    table.sort(
+        availableEggs,
+        function(a, b)
+
+            -- -------------------------
+            -- RARITY
+            -- -------------------------
+
+            if RarityPreference ~= "None" then
+
+                local rarityA =
+                    RarityOrder[a.Name]
+                    or math.huge
+
+                local rarityB =
+                    RarityOrder[b.Name]
+                    or math.huge
+
+                if rarityA ~= rarityB then
+
+                    if RarityPreference ==
+                        "Most Rarest"
+                    then
+
+                        return rarityA < rarityB
+
+                    elseif RarityPreference ==
+                        "Least Rarest"
+                    then
+
+                        return rarityA > rarityB
+
+                    end
+
+                end
+
+            end
+
+            -- -------------------------
+            -- WEIGHT
+            -- -------------------------
+
+            if WeightPreference ~= "None" then
+
+                local dataA =
+                    a:FindFirstChild("Data")
+
+                local dataB =
+                    b:FindFirstChild("Data")
+
+                local weightA =
+                    dataA
+                    and dataA:FindFirstChild(
+                        "Weight"
+                    )
+
+                local weightB =
+                    dataB
+                    and dataB:FindFirstChild(
+                        "Weight"
+                    )
+
+                local valueA =
+                    weightA
+                    and tonumber(weightA.Value)
+
+                local valueB =
+                    weightB
+                    and tonumber(weightB.Value)
+
+                if valueA and valueB then
+
+                    if valueA ~= valueB then
+
+                        if WeightPreference ==
+                            "Highest Weight"
+                        then
+
+                            return valueA > valueB
+
+                        elseif WeightPreference ==
+                            "Lowest Weight"
+                        then
+
+                            return valueA < valueB
+
+                        end
+
+                    end
+
+                elseif valueA and not valueB then
+
+                    return true
+
+                elseif valueB and not valueA then
+
+                    return false
+
+                end
+
+            end
+
+            -- -------------------------
+            -- ORIGINAL EGG ORDER
+            -- -------------------------
+
+            local orderA =
+                table.find(
+                    Eggs,
+                    a.Name
+                )
+                or math.huge
+
+            local orderB =
+                table.find(
+                    Eggs,
+                    b.Name
+                )
+                or math.huge
+
+            return orderA < orderB
+        end
+    )
+
+    return availableEggs[1]
+end
 
 -- =====================================
 -- HATCH PROMPT
@@ -1395,11 +1189,9 @@ local function GetHatchPrompt()
     local plot =
         GetMyPlot()
 
-
     if not plot then
         return nil
     end
-
 
     local egg =
         plot:FindFirstChild(
@@ -1407,11 +1199,9 @@ local function GetHatchPrompt()
             true
         )
 
-
     if not egg then
         return nil
     end
-
 
     local hatch =
         egg:FindFirstChild(
@@ -1419,25 +1209,18 @@ local function GetHatchPrompt()
             true
         )
 
-
     if hatch
-        and hatch:IsA(
-            "ProximityPrompt"
-        )
+        and hatch:IsA("ProximityPrompt")
     then
 
         return hatch
-
     end
-
 
     return egg:FindFirstChildWhichIsA(
         "ProximityPrompt",
         true
     )
-
 end
-
 
 -- =====================================
 -- AUTO PLACE
@@ -1449,63 +1232,69 @@ local function PlaceSelectedEgg()
         return false
     end
 
-
     if StealingRunning then
         return false
     end
-
 
     if WaitingForHatch then
         return false
     end
 
+    -- =================================
+    -- GET EGG
+    -- =================================
 
     local egg =
         GetBackpackEgg()
-
 
     if not egg then
         return false
     end
 
-
     local humanoid =
         GetHumanoid()
-
 
     if not humanoid then
         return false
     end
 
+    -- =================================
+    -- GET OLD COUNT
+    -- =================================
+
+    local oldEggCount =
+        GetEggCount()
 
     -- =================================
     -- EQUIP
     -- =================================
 
-    humanoid:EquipTool(
-        egg
-    )
+    humanoid:EquipTool(egg)
 
-
-    task.wait(0.2)
-
+    task.wait(0.25)
 
     -- =================================
-    -- BASEPLATE
+    -- CHECK CHARACTER
+    -- =================================
+
+    if egg.Parent ~= Player.Character then
+
+        return false
+    end
+
+    -- =================================
+    -- GET BASEPLATE
     -- =================================
 
     local baseplate =
         GetMyBaseplate()
-
 
     if not baseplate then
 
         humanoid:UnequipTools()
 
         return false
-
     end
-
 
     -- =================================
     -- RANDOM POSITION
@@ -1516,98 +1305,97 @@ local function PlaceSelectedEgg()
             baseplate
         )
 
-
     if not position then
 
         humanoid:UnequipTools()
 
         return false
-
     end
-
 
     -- =================================
     -- PLACE
     -- =================================
 
-    local success =
-        pcall(
-            function()
+    local fired =
+        pcall(function()
 
-                EggPlaced:FireServer({
+            EggPlaced:FireServer({
+                PlantPosition = position
+            })
 
-                    PlantPosition =
-                        position
+        end)
 
-                })
-
-            end
-        )
-
-
-    if not success then
+    if not fired then
 
         humanoid:UnequipTools()
 
         return false
-
     end
 
-
-    task.wait(0.3)
-
-
     -- =================================
-    -- CHECK PLACEMENT RESULT
+    -- WAIT FOR SERVER
     -- =================================
 
-    if egg.Parent
-        == Player.Character
-    then
+    task.wait(0.8)
 
-        local currentEggCount =
-            GetEggCount()
+    -- =================================
+    -- CHECK NEW COUNT
+    -- =================================
 
-
-        humanoid:UnequipTools()
-
-
-        LearnedEggCapacity =
-            currentEggCount
-
-
-        WaitingForHatch =
-            true
-
-
-        print(
-            "Placement failed. Eggs inside Plot > Eggs:",
-            currentEggCount
-        )
-
-
-        return false
-
-    end
-
+    local newEggCount =
+        GetEggCount()
 
     -- =================================
     -- SUCCESS
     -- =================================
 
-    WaitingForHatch =
-        false
+    if newEggCount > oldEggCount then
 
+        WaitingForHatch = false
+
+        print(
+            "Auto Place: Egg placed successfully."
+        )
+
+        return true
+    end
+
+    -- =================================
+    -- SECOND CHECK
+    -- Some servers update slower
+    -- =================================
+
+    task.wait(0.5)
+
+    newEggCount =
+        GetEggCount()
+
+    if newEggCount > oldEggCount then
+
+        WaitingForHatch = false
+
+        print(
+            "Auto Place: Egg placed successfully."
+        )
+
+        return true
+    end
+
+    -- =================================
+    -- FAILED
+    -- =================================
+
+    humanoid:UnequipTools()
+
+    WaitingForHatch = true
 
     print(
-        "Egg placed successfully. Continuing placement."
+        "Auto Place: Placement failed. Plot Eggs:",
+        newEggCount
     )
 
-
-    return true
-
+    return false
 end
-
 
 -- =====================================
 -- AUTO HATCH
@@ -1619,60 +1407,40 @@ local function HatchEgg()
         return false
     end
 
-
     if StealingRunning then
         return false
     end
-
 
     if HatchRunning then
         return false
     end
 
-
     local prompt =
         GetHatchPrompt()
-
 
     if not prompt then
         return false
     end
 
+    HatchRunning = true
 
-    HatchRunning =
-        true
-
-
-    fireproximityprompt(
-        prompt
-    )
-
+    fireproximityprompt(prompt)
 
     print(
         "Auto Hatch: Hatch prompt fired"
     )
 
+    task.wait(0.75)
 
-    task.wait(0.5)
-
-
-    HatchRunning =
-        false
-
-
-    WaitingForHatch =
-        false
-
+    HatchRunning = false
+    WaitingForHatch = false
 
     print(
-        "Auto Hatch finished. Auto Place resumed."
+        "Auto Hatch: Finished. Auto Place resumed."
     )
 
-
     return true
-
 end
-
 
 -- =====================================
 -- STEALING DROPDOWN
@@ -1692,17 +1460,11 @@ Tab:CreateDropdown({
 
     Flag = "StealingEggs",
 
-    Callback = function(
-        Options
-    )
+    Callback = function(Options)
 
-        SelectedStealingEggs =
-            {}
+        SelectedStealingEggs = {}
 
-
-        if type(Options)
-            == "table"
-        then
+        if type(Options) == "table" then
 
             for _, eggName in ipairs(
                 Options
@@ -1714,18 +1476,15 @@ Tab:CreateDropdown({
 
             end
 
-        else
+        elseif Options then
 
             SelectedStealingEggs[
                 Options
             ] = true
 
         end
-
     end
-
 })
-
 
 -- =====================================
 -- AUTO EGG
@@ -1739,53 +1498,36 @@ Tab:CreateToggle({
 
     Flag = "EggAuto",
 
-    Callback = function(
-        Value
-    )
+    Callback = function(Value)
 
-        StealingEnabled =
-            Value
-
+        StealingEnabled = Value
 
         if not Value then
 
-            StealingRunning =
-                false
-
+            StealingRunning = false
 
             StopMovement()
 
             return
-
         end
 
+        task.spawn(function()
 
-        task.spawn(
-            function()
+            while StealingEnabled do
 
-                while StealingEnabled do
+                RunStealingEgg()
 
-                    RunStealingEgg()
-
-
-                    if not StealingEnabled then
-                        break
-                    end
-
-
-                    task.wait(
-                        0.5
-                    )
-
+                if not StealingEnabled then
+                    break
                 end
 
+                task.wait(0.5)
+
             end
-        )
 
+        end)
     end
-
 })
-
 
 -- =====================================
 -- PLACE EGG DROPDOWN
@@ -1805,17 +1547,11 @@ Tab:CreateDropdown({
 
     Flag = "PlaceEggs",
 
-    Callback = function(
-        Options
-    )
+    Callback = function(Options)
 
-        SelectedPlaceEggs =
-            {}
+        SelectedPlaceEggs = {}
 
-
-        if type(Options)
-            == "table"
-        then
+        if type(Options) == "table" then
 
             for _, eggName in ipairs(
                 Options
@@ -1827,18 +1563,15 @@ Tab:CreateDropdown({
 
             end
 
-        else
+        elseif Options then
 
             SelectedPlaceEggs[
                 Options
             ] = true
 
         end
-
     end
-
 })
-
 
 -- =====================================
 -- WEIGHT PREFERENCE
@@ -1849,13 +1582,9 @@ Tab:CreateDropdown({
     Name = "Weight Preference",
 
     Options = {
-
         "None",
-
         "Lowest Weight",
-
         "Highest Weight"
-
     },
 
     CurrentOption = {
@@ -1866,17 +1595,13 @@ Tab:CreateDropdown({
 
     Flag = "WeightPreference",
 
-    Callback = function(
-        Option
-    )
+    Callback = function(Option)
 
         WeightPreference =
             Option[1]
 
     end
-
 })
-
 
 -- =====================================
 -- RARITY PREFERENCE
@@ -1887,13 +1612,9 @@ Tab:CreateDropdown({
     Name = "Rarity Preference",
 
     Options = {
-
         "None",
-
         "Least Rarest",
-
         "Most Rarest"
-
     },
 
     CurrentOption = {
@@ -1904,17 +1625,13 @@ Tab:CreateDropdown({
 
     Flag = "RarityPreference",
 
-    Callback = function(
-        Option
-    )
+    Callback = function(Option)
 
         RarityPreference =
             Option[1]
 
     end
-
 })
-
 
 -- =====================================
 -- AUTO PLACE
@@ -1928,59 +1645,44 @@ Tab:CreateToggle({
 
     Flag = "AutoPlaceEgg",
 
-    Callback = function(
-        Value
-    )
+    Callback = function(Value)
 
-        AutoPlaceEnabled =
-            Value
-
+        AutoPlaceEnabled = Value
 
         if not Value then
 
             UnequipCurrentTool()
 
-            WaitingForHatch =
-                false
+            WaitingForHatch = false
 
             return
-
         end
 
+        task.spawn(function()
 
-        task.spawn(
-            function()
+            while AutoPlaceEnabled do
 
-                while AutoPlaceEnabled do
+                -- Stealing has priority
+                if not StealingRunning then
 
-                    if not StealingRunning
-                        and not WaitingForHatch
-                    then
+                    -- Hatch must finish first
+                    if not WaitingForHatch then
 
-                        pcall(
-                            function()
-
-                                PlaceSelectedEgg()
-
-                            end
-                        )
+                        pcall(function()
+                            PlaceSelectedEgg()
+                        end)
 
                     end
 
-
-                    task.wait(
-                        0.5
-                    )
-
                 end
 
+                task.wait(0.5)
+
             end
-        )
 
+        end)
     end
-
 })
-
 
 -- =====================================
 -- AUTO HATCH
@@ -1994,58 +1696,41 @@ Tab:CreateToggle({
 
     Flag = "AutoHatchEgg",
 
-    Callback = function(
-        Value
-    )
+    Callback = function(Value)
 
-        AutoHatchEnabled =
-            Value
-
+        AutoHatchEnabled = Value
 
         if not Value then
             return
         end
 
+        task.spawn(function()
 
-        task.spawn(
-            function()
+            while AutoHatchEnabled do
 
-                while AutoHatchEnabled do
+                -- Stealing always has priority
+                if not StealingRunning then
 
-                    -- Stealing has priority
+                    if WaitingForHatch
+                        and not HatchRunning
+                    then
 
-                    if not StealingRunning then
-
-                        if WaitingForHatch
-                            and not HatchRunning
-                        then
-
-                            pcall(
-                                function()
-
-                                    HatchEgg()
-
-                                end
-                            )
-
-                        end
+                        pcall(function()
+                            HatchEgg()
+                        end)
 
                     end
 
-
-                    task.wait(
-                        0.5
-                    )
-
                 end
 
+                task.wait(0.5)
+
             end
-        )
+
+        end)
 
     end
-
 })
-
 
 -- =====================================
 -- LUCK UPGRADE
@@ -2056,11 +1741,8 @@ Tab:CreateDropdown({
     Name = "Luck Upgrade",
 
     Options = {
-
         "One Time",
-
         "Max"
-
     },
 
     CurrentOption = {
@@ -2071,17 +1753,13 @@ Tab:CreateDropdown({
 
     Flag = "LuckUpgradeMode",
 
-    Callback = function(
-        Option
-    )
+    Callback = function(Option)
 
         LuckMode =
             Option[1]
 
     end
-
 })
-
 
 -- =====================================
 -- AUTO LUCK UPGRADE
@@ -2095,48 +1773,35 @@ Tab:CreateToggle({
 
     Flag = "AutoLuckUpgrade",
 
-    Callback = function(
-        Value
-    )
+    Callback = function(Value)
 
-        LuckEnabled =
-            Value
-
+        LuckEnabled = Value
 
         if not Value then
             return
         end
 
+        task.spawn(function()
 
-        task.spawn(
-            function()
+            while LuckEnabled do
 
-                while LuckEnabled do
+                if LuckMode == "Max" then
 
-                    if LuckMode
-                        == "Max"
-                    then
-
-                        Upgrades:FireServer(
-                            "Max"
-                        )
-
-                    else
-
-                        Upgrades:FireServer()
-
-                    end
-
-
-                    task.wait(
-                        1
+                    Upgrades:FireServer(
+                        "Max"
                     )
+
+                else
+
+                    Upgrades:FireServer()
 
                 end
 
+                task.wait(1)
+
             end
-        )
+
+        end)
 
     end
-
 })
