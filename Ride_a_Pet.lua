@@ -543,6 +543,65 @@ local function CreateWaypointPlatform(position)
     return platform
 end
 
+    local waypoint1 =
+    startPosition:Lerp(
+        fencePoint,
+        0.0909
+    )
+
+local waypoint2 =
+    startPosition:Lerp(
+        fencePoint,
+        0.1818
+    )
+
+local waypoint3 =
+    startPosition:Lerp(
+        fencePoint,
+        0.2727
+    )
+
+local waypoint4 =
+    startPosition:Lerp(
+        fencePoint,
+        0.3636
+    )
+
+local waypoint5 =
+    startPosition:Lerp(
+        fencePoint,
+        0.4545
+    )
+
+local waypoint6 =
+    startPosition:Lerp(
+        fencePoint,
+        0.5455
+    )
+
+local waypoint7 =
+    startPosition:Lerp(
+        fencePoint,
+        0.6364
+    )
+
+local waypoint8 =
+    startPosition:Lerp(
+        fencePoint,
+        0.7273
+    )
+
+local waypoint9 =
+    startPosition:Lerp(
+        fencePoint,
+        0.8182
+    )
+
+local waypoint10 =
+    startPosition:Lerp(
+        fencePoint,
+        0.9091
+    )
 
 -- =================================
 -- WAYPOINT 1
