@@ -1325,7 +1325,7 @@ end
 
 if not equipped then
     humanoid:EquipTool(egg)
-    task.wait(0.5)
+    task.wait(0.2)
 
     if egg.Parent ~= Player.Character then
         return false
