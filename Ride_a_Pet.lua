@@ -1311,16 +1311,26 @@ local function PlaceSelectedEgg()
     -- EQUIP
     -- =================================
 
-    humanoid:EquipTool(egg)
+humanoid:EquipTool(egg)
 
-    task.wait(0.25)
+local equipped = false
+for _ = 1, 20 do
+    if egg.Parent == Player.Character then
+        equipped = true
+        break
+    end
+
+    task.wait(0.1)
+end
+
+if not equipped then
+    humanoid:EquipTool(egg)
+    task.wait(0.5)
 
     if egg.Parent ~= Player.Character then
-
-        humanoid:UnequipTools()
-
         return false
     end
+end
 
     -- =================================
     -- OWNER CHECK AGAIN
