@@ -252,19 +252,10 @@ end
 -- =====================================
 
 local function GetFence()
+    local baseplate = workspace:FindFirstChild("Baseplate", true)
 
-    local fence =
-        workspace:FindFirstChild(
-            "Fence",
-            true
-        )
-
-    if fence
-        and fence:IsA("Model")
-    then
-
-        return fence
-
+    if baseplate and baseplate:IsA("BasePart") then
+        return baseplate
     end
 
     return nil
