@@ -97,7 +97,7 @@ local AFTER_EGG_WAIT = 1
 
 local WAYPOINT_WAIT = 1
 
-local NEAR_FENCE_WAIT = 10
+local NEAR_FENCE_WAIT = 7
 local WALK_DISTANCE = 8
 
 -- =====================================
