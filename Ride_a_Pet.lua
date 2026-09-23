@@ -255,7 +255,7 @@ local function GetFence()
 
     local fence =
         workspace:FindFirstChild(
-            "Full Fence",
+            "Fence",
             true
         )
 
