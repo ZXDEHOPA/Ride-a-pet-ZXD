@@ -1725,55 +1725,286 @@ local function EquipEgg(
         == character
 end
 
+```lua
 -- =====================================
 -- HATCH PROMPT
 -- =====================================
 
 local function GetHatchPrompt()
 
-    local plot =
-        GetMyPlot()
-
-    if not plot
-        or not VerifyMyPlot(
-            plot
+    local plots =
+        workspace:FindFirstChild(
+            "Plots"
         )
-    then
 
+    if not plots then
         return nil
     end
 
-    local egg =
-        plot:FindFirstChild(
-            "Egg",
-            true
-        )
+    for _, plot in ipairs(
+        plots:GetChildren()
+    ) do
 
-    if not egg then
-        return nil
+        if plot:IsA("Model")
+            and plot.Name == "Plot"
+        then
+
+            -- =============================
+            -- CHECK OWNER
+            -- =============================
+
+            local data =
+                plot:FindFirstChild(
+                    "Data"
+                )
+
+            if not data then
+                continue
+            end
+
+            local owner =
+                data:FindFirstChild(
+                    "Owner"
+                )
+
+            if not owner
+                or not owner:IsA(
+                    "ObjectValue"
+                )
+            then
+                continue
+            end
+
+            if owner.Value
+                ~= Player
+            then
+                continue
+            end
+
+            -- =============================
+            -- PLAYER'S EGG FOLDER
+            -- =============================
+
+            local eggs =
+                plot:FindFirstChild(
+                    "Eggs"
+                )
+
+            if not eggs then
+                return nil
+            end
+
+            -- =============================
+            -- FIND EGG
+            -- =============================
+
+            local egg =
+                eggs:FindFirstChild(
+                    "Egg"
+                )
+
+            if not egg then
+                return nil
+            end
+
+            -- =============================
+            -- ROOT PART
+            -- =============================
+
+            local rootPart =
+                egg:FindFirstChild(
+                    "RootPart"
+                )
+
+            if not rootPart then
+                return nil
+            end
+
+            -- =============================
+            -- HATCH PROMPT
+            -- =============================
+
+            local hatch =
+                rootPart:FindFirstChild(
+                    "Hatch"
+                )
+
+            if hatch
+                and hatch:IsA(
+                    "ProximityPrompt"
+                )
+            then
+
+                return hatch
+            end
+
+            return nil
+        end
     end
 
-    local hatch =
-        egg:FindFirstChild(
-            "Hatch",
-            true
-        )
-
-    if hatch
-        and hatch:IsA(
-            "ProximityPrompt"
-        )
-    then
-
-        return hatch
-    end
-
-    return
-        egg:FindFirstChildWhichIsA(
-            "ProximityPrompt",
-            true
-        )
+    return nil
 end
+
+
+-- =====================================
+-- AUTO HATCH
+-- =====================================
+
+local function HatchEgg()
+
+    if not AutoHatchEnabled
+        or StealingRunning
+        or HatchRunning
+    then
+
+        return false
+    end
+
+    local prompt =
+        GetHatchPrompt()
+
+    if not prompt then
+        return false
+    end
+
+    HatchRunning = true
+
+    print(
+        "Auto Hatch: Found player's egg Hatch prompt."
+    )
+
+    -- =============================
+    -- HATCH
+    -- =============================
+
+    local success =
+        pcall(
+            function()
+
+                fireproximityprompt(
+                    prompt
+                )
+
+            end
+        )
+
+    if not success then
+
+        warn(
+            "Auto Hatch: Failed to fire Hatch prompt."
+        )
+
+        HatchRunning = false
+        WaitingForHatch = false
+
+        return false
+    end
+
+    -- =============================
+    -- WAIT FOR EGG TO DISAPPEAR
+    -- =============================
+
+    local start =
+        os.clock()
+
+    while AutoHatchEnabled
+        and not StealingRunning
+        and os.clock()
+            - start
+            < 5
+    do
+
+        task.wait(0.1)
+
+        local currentPrompt =
+            GetHatchPrompt()
+
+        if not currentPrompt then
+            break
+        end
+    end
+
+    HatchRunning = false
+    WaitingForHatch = false
+
+    print(
+        "Auto Hatch: Finished."
+    )
+
+    return true
+end
+
+
+-- =====================================
+-- AUTO HATCH EGG
+-- =====================================
+
+Tab:CreateToggle({
+
+    Name =
+        "Auto Hatch Egg",
+
+    CurrentValue =
+        false,
+
+    Flag =
+        "AutoHatchEgg",
+
+    Callback =
+        function(
+            Value
+        )
+
+            AutoHatchEnabled =
+                Value
+
+            if not Value then
+
+                WaitingForHatch =
+                    false
+
+                HatchRunning =
+                    false
+
+                return
+            end
+
+            task.spawn(
+                function()
+
+                    while AutoHatchEnabled do
+
+                        -- Stealing always has priority
+                        if not StealingRunning
+                            and not HatchRunning
+                        then
+
+                            local prompt =
+                                GetHatchPrompt()
+
+                            if prompt then
+
+                                WaitingForHatch =
+                                    true
+
+                                pcall(
+                                    function()
+
+                                        HatchEgg()
+
+                                    end
+                                )
+                            end
+                        end
+
+                        task.wait(
+                            0.25
+                        )
+                    end
+                end
+            )
+        end
+})
 
 -- =====================================
 -- AUTO PLACE
