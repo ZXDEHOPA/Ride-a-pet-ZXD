@@ -61,7 +61,7 @@ local SelectedPlaceEggs = {}
 local LOAD_WAIT = 1
 local AFTER_EGG_WAIT = 0.5
 local WAYPOINT_WAIT = 1
-local NEAR_BASEPLATE_WAIT = 10
+local NEAR_BASEPLATE_WAIT = 4
 local WALK_DISTANCE = 8
 
 local FallbackEggs = {
