@@ -35,26 +35,91 @@ local EggPlaced =
     ReplicatedStorage.Remotes.Game.EggPlaced
 
 -- =====================================
--- EGGS
+-- DYNAMIC EGG RANKING
 -- =====================================
 
-local Eggs = {
-    "Cherub Egg",
-    "Solaris Egg",
-    "Blackhole Egg",
-    "Aurora Egg",
-    "Soul Egg",
-    "Sinister Egg"
-}
+local function GetEggUIData(eggName)
 
-local RarityOrder = {
-    ["Cherub Egg"] = 1,
-    ["Solaris Egg"] = 2,
-    ["Blackhole Egg"] = 3,
-    ["Aurora Egg"] = 4,
-    ["Soul Egg"] = 5,
-    ["Sinister Egg"] = 6
-}
+    local playerGui =
+        Player:FindFirstChild("PlayerGui")
+
+    if not playerGui then
+        return nil
+    end
+
+    local main =
+        playerGui:FindFirstChild("Main")
+
+    if not main then
+        return nil
+    end
+
+    local eggTracker =
+        main:FindFirstChild("EggTracker")
+
+    if not eggTracker then
+        return nil
+    end
+
+    local eggsHolder =
+        eggTracker:FindFirstChild("EggsHolder")
+
+    if not eggsHolder then
+        return nil
+    end
+
+    local eggFrame =
+        eggsHolder:FindFirstChild(eggName)
+
+    if not eggFrame then
+        return nil
+    end
+
+    -- Rarity is determined dynamically
+    -- from the egg's position/order inside EggsHolder.
+    local rarityRank =
+        eggFrame.LayoutOrder
+
+    -- Luck
+    local luckValue = 0
+
+    local luckDisplay =
+        eggFrame:FindFirstChild("LuckDisplay")
+
+    if luckDisplay then
+
+        local luck =
+            luckDisplay:FindFirstChild("Luck")
+
+        if luck then
+
+            if luck:IsA("TextLabel")
+                or luck:IsA("TextButton")
+                or luck:IsA("TextBox")
+            then
+                local text =
+                    luck.Text
+
+                local number =
+                    tonumber(
+                        string.match(
+                            text,
+                            "[%d%.]+"
+                        )
+                    )
+
+                if number then
+                    luckValue = number
+                end
+            end
+        end
+    end
+
+    return {
+        RarityRank = rarityRank,
+        Luck = luckValue
+    }
+end
 
 -- =====================================
 -- STATES
