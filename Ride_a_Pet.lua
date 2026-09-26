@@ -121,12 +121,6 @@ end
 
 -- =====================================
 -- DYNAMIC EGG TRACKER
---
--- PlayerGui
--- > Main
--- > EggTracker
--- > EggsHolder
--- > Egg Frame
 -- =====================================
 
 local function GetEggsHolder()
@@ -151,12 +145,17 @@ local function GetEggsHolder()
     return tracker:FindFirstChild("EggsHolder")
 end
 
-local function ParseLuckText(text)
+
+-- =====================================
+-- NUMBER PARSER
+-- =====================================
+
+local function ParseEggNumber(text)
     if type(text) ~= "string" then
-        return 0
+        return nil
     end
 
-    text = text:gsub(",", ".")
+    text = text:gsub(",", "")
 
     local number = string.match(
         text,
@@ -164,149 +163,354 @@ local function ParseLuckText(text)
     )
 
     if not number then
-        return 0
+        return nil
     end
 
-    return tonumber(number) or 0
+    local value = tonumber(number)
+
+    if not value then
+        return nil
+    end
+
+    local suffix = string.match(
+        text,
+        "[KkMmBbTt]"
+    )
+
+    if suffix then
+        local multipliers = {
+            K = 1e3,
+            k = 1e3,
+
+            M = 1e6,
+            m = 1e6,
+
+            B = 1e9,
+            b = 1e9,
+
+            T = 1e12,
+            t = 1e12
+        }
+
+        value *= multipliers[suffix]
+    end
+
+    return value
 end
 
-local function GetLuckFromEggFrame(eggFrame)
-    local luckDisplay =
-        eggFrame:FindFirstChild("LuckDisplay")
 
-    if not luckDisplay then
-        return 0
+-- =====================================
+-- RARITY VALUES
+-- =====================================
+
+local RarityValues = {
+    ["Common"] = 1,
+    ["Uncommon"] = 2,
+    ["Rare"] = 3,
+    ["Epic"] = 4,
+    ["Legendary"] = 5,
+    ["Mythic"] = 6,
+    ["Secret"] = 7,
+    ["Exclusive"] = 8
+}
+
+
+-- =====================================
+-- GET RARITY
+-- =====================================
+
+local function GetEggRarity(eggFrame)
+
+    if not eggFrame then
+        return 0, "Unknown"
     end
 
-    local luck =
-        luckDisplay:FindFirstChild("Luck")
+    -- Dragon and Giant are always Exclusive.
+    local eggName =
+        string.lower(eggFrame.Name)
 
-    if not luck then
-        return 0
-    end
-
-    if luck:IsA("TextLabel")
-        or luck:IsA("TextButton")
-        or luck:IsA("TextBox")
+    if eggName == "dragon"
+        or eggName == "giant"
     then
-        return ParseLuckText(luck.Text)
+        return 8, "Exclusive"
     end
 
-    local textObject =
-        luck:FindFirstChildWhichIsA(
-            "TextLabel",
-            true
-        )
 
-        or luck:FindFirstChildWhichIsA(
-            "TextButton",
-            true
-        )
+    -- Try Attribute first.
+    local rarity =
+        eggFrame:GetAttribute("Rarity")
 
-        or luck:FindFirstChildWhichIsA(
-            "TextBox",
-            true
-        )
-
-    if textObject then
-        return ParseLuckText(textObject.Text)
+    if typeof(rarity) == "number" then
+        return rarity, tostring(rarity)
     end
+
+    if typeof(rarity) == "string" then
+
+        local rarityNumber =
+            RarityValues[rarity]
+
+        if rarityNumber then
+            return rarityNumber, rarity
+        end
+    end
+
+
+    -- Try common rarity UI/value names.
+    local rarityObjects = {
+        "Rarity",
+        "RarityDisplay",
+        "RarityLabel",
+        "EggRarity"
+    }
+
+    for _, objectName in ipairs(
+        rarityObjects
+    ) do
+
+        local object =
+            eggFrame:FindFirstChild(
+                objectName,
+                true
+            )
+
+        if object then
+
+            local text
+
+            if object:IsA("TextLabel")
+                or object:IsA("TextButton")
+                or object:IsA("TextBox")
+            then
+                text = object.Text
+
+            elseif object:IsA("StringValue") then
+                text = object.Value
+
+            elseif object:IsA("NumberValue")
+                or object:IsA("IntValue")
+            then
+                return object.Value, tostring(object.Value)
+            end
+
+            if text then
+
+                local number =
+                    ParseEggNumber(text)
+
+                if number then
+                    return number, text
+                end
+
+                for rarityName, rarityValue in pairs(
+                    RarityValues
+                ) do
+
+                    if string.find(
+                        string.lower(text),
+                        string.lower(rarityName),
+                        1,
+                        true
+                    )
+                    then
+                        return rarityValue, rarityName
+                    end
+                end
+            end
+        end
+    end
+
+
+    return 0, "Unknown"
+end
+
+
+-- =====================================
+-- GET LUCK
+-- =====================================
+
+local function GetLuckFromEggFrame(eggFrame)
+
+    if not eggFrame then
+        return 0
+    end
+
+
+    -- Try Luck attribute.
+    local luckAttribute =
+        eggFrame:GetAttribute("Luck")
+
+    if typeof(luckAttribute) == "number" then
+        return luckAttribute
+    end
+
+    if typeof(luckAttribute) == "string" then
+
+        local value =
+            ParseEggNumber(luckAttribute)
+
+        if value then
+            return value
+        end
+    end
+
+
+    -- Main known structure:
+    -- EggFrame
+    -- > LuckDisplay
+    -- > Luck
+
+    local luckDisplay =
+        eggFrame:FindFirstChild(
+            "LuckDisplay"
+        )
+
+    if luckDisplay then
+
+        local luck =
+            luckDisplay:FindFirstChild(
+                "Luck",
+                true
+            )
+
+        if luck then
+
+            if luck:IsA("TextLabel")
+                or luck:IsA("TextButton")
+                or luck:IsA("TextBox")
+            then
+
+                return ParseEggNumber(
+                    luck.Text
+                ) or 0
+            end
+
+            if luck:IsA("NumberValue")
+                or luck:IsA("IntValue")
+            then
+                return luck.Value
+            end
+
+            local textObject =
+                luck:FindFirstChildWhichIsA(
+                    "TextLabel",
+                    true
+                )
+
+            if textObject then
+                return ParseEggNumber(
+                    textObject.Text
+                ) or 0
+            end
+        end
+    end
+
 
     return 0
 end
 
+
 -- =====================================
--- GET DYNAMIC EGG DATA
+-- GET ALL EGG DATA
 -- =====================================
 
 local function GetDynamicEggData()
-    local holder = GetEggsHolder()
+
+    local holder =
+        GetEggsHolder()
 
     if not holder then
         return {}
     end
 
-    local frames = {}
-
-    for index, child in ipairs(
-        holder:GetChildren()
-    ) do
-        if child:IsA("Frame") then
-            table.insert(frames, {
-                Frame = child,
-                OriginalIndex = index
-            })
-        end
-    end
-
-    -- The EggTracker's visual order
-    -- is used as the rarity order.
-    --
-    -- Top egg = rarest.
-    -- Lower egg = less rare.
-
-    table.sort(frames, function(a, b)
-        local orderA =
-            a.Frame.LayoutOrder
-
-        local orderB =
-            b.Frame.LayoutOrder
-
-        if orderA ~= orderB then
-            return orderA < orderB
-        end
-
-        local yA =
-            a.Frame.AbsolutePosition.Y
-
-        local yB =
-            b.Frame.AbsolutePosition.Y
-
-        if yA ~= yB then
-            return yA < yB
-        end
-
-        return a.OriginalIndex <
-            b.OriginalIndex
-    end)
-
     local result = {}
 
-    for rarityRank, entry in ipairs(frames) do
-        local frame = entry.Frame
+    for _, child in ipairs(
+        holder:GetChildren()
+    ) do
 
-        result[frame.Name] = {
-            Name = frame.Name,
-            RarityRank = rarityRank,
-            Luck = GetLuckFromEggFrame(frame),
-            Frame = frame
-        }
+        if child:IsA("Frame") then
+
+            local rarityRank, rarityName =
+                GetEggRarity(child)
+
+            local luck =
+                GetLuckFromEggFrame(child)
+
+            result[child.Name] = {
+                Name = child.Name,
+
+                RarityRank = rarityRank,
+
+                RarityName = rarityName,
+
+                Luck = luck,
+
+                Frame = child
+            }
+        end
     end
 
     return result
 end
 
+
 -- =====================================
--- GET EGG NAMES
+-- GET SORTED EGG NAMES
 -- =====================================
 
 local function GetDynamicEggNames()
+
     local data =
         GetDynamicEggData()
 
     local names = {}
 
-    for _, eggData in pairs(data) do
+    for eggName in pairs(data) do
         table.insert(
             names,
-            eggData.Name
+            eggName
         )
     end
 
-    table.sort(names, function(a, b)
-        return data[a].RarityRank <
-            data[b].RarityRank
-    end)
+
+    -- HIGHEST RARITY FIRST
+    -- THEN HIGHEST LUCK
+    -- THEN ALPHABETICAL NAME
+
+    table.sort(
+        names,
+        function(a, b)
+
+            local eggA =
+                data[a]
+
+            local eggB =
+                data[b]
+
+
+            if eggA.RarityRank
+                ~= eggB.RarityRank
+            then
+
+                return eggA.RarityRank
+                    > eggB.RarityRank
+            end
+
+
+            if eggA.Luck
+                ~= eggB.Luck
+            then
+
+                return eggA.Luck
+                    > eggB.Luck
+            end
+
+
+            return string.lower(a)
+                < string.lower(b)
+        end
+    )
+
 
     return names
 end
