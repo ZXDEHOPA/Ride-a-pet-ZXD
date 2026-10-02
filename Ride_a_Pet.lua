@@ -1377,13 +1377,15 @@ local function RunStealingEgg()
     StealingRunning = true
 
 
-    -- Volcanic Egg uses a special route.
-    -- First load the Volcano Model, then wait for VolcanoEntrance,
-    -- then do the TP -> Tween -> actual egg sequence.
-    if SelectedStealingEggs[
-        "Volcanic Egg"
-    ]
-    then
+    -- Only Volcanic Egg gets the Volcano route.
+    -- Normal eggs go directly into the original Auto Egg flow.
+    local isVolcanicTarget =
+        SelectedStealingEggs[
+            "Volcanic Egg"
+        ] == true
+
+
+    if isVolcanicTarget then
 
         local volcanoLoaded =
             LoadVolcano()
@@ -1410,8 +1412,36 @@ local function RunStealingEgg()
     end
 
 
+    -- Get the actual rendered egg only after the special Volcano route
+    -- has finished. This allows Volcanic Egg to load after the Volcano TP.
     local egg =
         GetSelectedStealingEgg()
+
+
+    if not egg
+        and isVolcanicTarget
+    then
+
+        local start =
+            os.clock()
+
+        while StealingEnabled
+            and os.clock() - start
+                < 10
+        do
+
+            task.wait(0.25)
+
+            egg =
+                GetSelectedStealingEgg()
+
+            if egg then
+                break
+            end
+
+        end
+
+    end
 
 
     if not egg then
