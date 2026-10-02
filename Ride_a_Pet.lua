@@ -8,9 +8,6 @@ local Players =
 local ReplicatedStorage =
     game:GetService("ReplicatedStorage")
 
-local TweenService =
-    game:GetService("TweenService")
-
 local Player =
     Players.LocalPlayer
 
@@ -94,15 +91,6 @@ local WAYPOINT_WAIT = 1
 local NEAR_BASEPLATE_WAIT = 4
 
 local WALK_DISTANCE = 8
-
-local VOLCANO_TWEEN_POSITION = Vector3.new(
-    -4970,
-    41275,
-    -3652
-)
-
-local VOLCANO_TWEEN_TIME = 1
-local VOLCANO_LOAD_TIMEOUT = 15
 
 
 local FallbackEggs = {
@@ -1009,6 +997,25 @@ local function GetSelectedStealingEgg()
     end
 
 
+    -- Volcanic Egg is checked directly because it may
+    -- appear in RenderedEggs before the normal tracker updates.
+
+    if SelectedStealingEggs["Volcanic Egg"] then
+
+        local volcanicEgg =
+            renderedEggs:FindFirstChild(
+                "Volcanic Egg"
+            )
+
+        if volcanicEgg
+            and volcanicEgg:IsA("Model")
+        then
+            return volcanicEgg
+        end
+
+    end
+
+
     local names =
         GetDynamicEggNames()
 
@@ -1050,7 +1057,6 @@ local function GetSelectedStealingEgg()
 
     return nil
 end
-
 
 local function GetModelPosition(
     model
@@ -1176,10 +1182,29 @@ end
 
 
 -- =====================================
--- VOLCANO LOADING / ROUTE
---
--- Volcano is a Model. VolcanoEntrance may not be streamed in yet.
--- First TP to the Volcano Model, then wait for VolcanoEntrance to appear.
+-- STEALING
+-- =====================================
+
+local TweenService =
+    game:GetService("TweenService")
+
+
+local VOLCANIC_EGG_NAME =
+    "Volcanic Egg"
+
+local VOLCANO_TWEEN_POSITION =
+    Vector3.new(
+        -4970,
+        41275,
+        -3652
+    )
+
+local VOLCANO_TWEEN_TIME = 1
+local VOLCANO_LOAD_TIMEOUT = 15
+
+
+-- =====================================
+-- VOLCANIC EGG HELPERS
 -- =====================================
 
 local function GetVolcanoModel()
@@ -1189,11 +1214,13 @@ local function GetVolcanoModel()
             "Volcano"
         )
 
+
     if volcano
         and volcano:IsA("Model")
     then
         return volcano
     end
+
 
     return nil
 end
@@ -1204,9 +1231,11 @@ local function GetVolcanoEntrance()
     local volcano =
         GetVolcanoModel()
 
+
     if not volcano then
         return nil
     end
+
 
     local entrance =
         volcano:FindFirstChild(
@@ -1214,140 +1243,198 @@ local function GetVolcanoEntrance()
             true
         )
 
+
     if entrance
         and entrance:IsA("BasePart")
     then
         return entrance
     end
 
+
     return nil
 end
 
 
-local function LoadVolcano()
+local function WaitForVolcanicEgg()
 
-    local root =
-        GetRoot()
-
-    if not root then
-        return false
-    end
-
-    local volcano =
-        GetVolcanoModel()
-
-    if not volcano then
-
-        warn(
-            "Volcano: Model not loaded."
-        )
-
-        return false
-
-    end
-
-    -- First TP to the Volcano Model itself.
-    -- This happens BEFORE looking for VolcanoEntrance.
-    local success, pivot =
-        pcall(function()
-            return volcano:GetPivot()
-        end)
-
-    if not success
-        or not pivot
-    then
-        warn(
-            "Volcano: Could not get Model pivot."
-        )
-
-        return false
-    end
-
-    root.CFrame = pivot
-
-    task.wait(0.5)
-
-    -- Ask the client to stream around the Volcano position if supported.
-    if workspace
-        and workspace.RequestStreamAroundAsync
-    then
-
-        pcall(function()
-            workspace:RequestStreamAroundAsync(
-                pivot.Position
-            )
-        end)
-
-    end
-
-    -- VolcanoEntrance can appear after the Model is loaded.
-    local start =
+    local startTime =
         os.clock()
 
-    while StealingEnabled
-        and os.clock() - start
-            < VOLCANO_LOAD_TIMEOUT
-    do
 
-        local entrance =
-            GetVolcanoEntrance()
+    while StealingEnabled do
 
-        if entrance then
-            return true
+        local renderedEggs =
+            workspace:FindFirstChild(
+                "RenderedEggs"
+            )
+
+
+        if renderedEggs then
+
+            local egg =
+                renderedEggs:FindFirstChild(
+                    VOLCANIC_EGG_NAME
+                )
+
+
+            if egg
+                and egg:IsA("Model")
+            then
+                return egg
+            end
+
         end
 
-        task.wait(0.25)
 
+        if os.clock() - startTime
+            >= VOLCANO_LOAD_TIMEOUT
+        then
+            return nil
+        end
+
+
+        task.wait(0.25)
     end
 
-    warn(
-        "Volcano: VolcanoEntrance did not load."
-    )
 
-    return false
+    return nil
 end
 
 
-local function GoToVolcanoEntrance()
-
-    local root =
-        GetRoot()
-
-    local entrance =
-        GetVolcanoEntrance()
-
-    if not root
-        or not entrance
-    then
-        return false
-    end
-
-    -- TP step: VolcanoEntrance
-    root.CFrame =
-        entrance.CFrame
-
-    task.wait(0.25)
+local function RunVolcanicRoute()
 
     if not StealingEnabled then
         return false
     end
 
-    root =
+
+    local root =
         GetRoot()
+
 
     if not root then
         return false
     end
 
-    -- Tween step: (-4970, 41275, -3652)
+
+    local volcano =
+        GetVolcanoModel()
+
+
+    if not volcano then
+
+        warn(
+            "Volcanic Egg: Volcano Model not found."
+        )
+
+        return false
+    end
+
+
+    -- Ask Roblox to stream the Volcano area.
+    pcall(
+        function()
+
+            workspace:
+                RequestStreamAroundAsync(
+                    volcano:GetPivot().Position
+                )
+
+        end
+    )
+
+
+    -- TP to the Volcano Model first.
+    root.CFrame =
+        volcano:GetPivot()
+
+
+    task.wait(0.5)
+
+
+    -- VolcanoEntrance may not exist until the
+    -- Volcano area has streamed in.
+    local entrance = nil
+
+    local startTime =
+        os.clock()
+
+
+    while StealingEnabled do
+
+        entrance =
+            GetVolcanoEntrance()
+
+
+        if entrance then
+            break
+        end
+
+
+        if os.clock() - startTime
+            >= VOLCANO_LOAD_TIMEOUT
+        then
+
+            warn(
+                "Volcanic Egg: VolcanoEntrance did not load."
+            )
+
+            return false
+        end
+
+
+        task.wait(0.25)
+    end
+
+
+    if not entrance then
+        return false
+    end
+
+
+    root =
+        GetRoot()
+
+
+    if not root then
+        return false
+    end
+
+
+    -- TP to VolcanoEntrance.
+    root.CFrame =
+        entrance.CFrame
+
+
+    task.wait(0.25)
+
+
+    if not StealingEnabled then
+        return false
+    end
+
+
+    root =
+        GetRoot()
+
+
+    if not root then
+        return false
+    end
+
+
+    -- Tween to the exact Volcano destination.
     local tween =
         TweenService:Create(
+
             root,
+
             TweenInfo.new(
                 VOLCANO_TWEEN_TIME,
                 Enum.EasingStyle.Linear,
                 Enum.EasingDirection.Out
             ),
+
             {
                 CFrame =
                     CFrame.new(
@@ -1356,10 +1443,33 @@ local function GoToVolcanoEntrance()
             }
         )
 
+
     tween:Play()
     tween.Completed:Wait()
 
-    return StealingEnabled
+
+    if not StealingEnabled then
+        return false
+    end
+
+
+    -- The actual egg must exist before the
+    -- normal stealing sequence continues.
+    local volcanicEgg =
+        WaitForVolcanicEgg()
+
+
+    if not volcanicEgg then
+
+        warn(
+            "Volcanic Egg: Egg did not spawn."
+        )
+
+        return false
+    end
+
+
+    return true
 end
 
 
@@ -1377,83 +1487,81 @@ local function RunStealingEgg()
     StealingRunning = true
 
 
-    -- Only Volcanic Egg gets the Volcano route.
-    -- Normal eggs go directly into the original Auto Egg flow.
-    local isVolcanicTarget =
-        SelectedStealingEggs[
-            "Volcanic Egg"
-        ] == true
+    -- IMPORTANT:
+    -- Normal eggs never enter the Volcano route.
+    -- The Volcano route is activated only when
+    -- the selected Volcanic Egg has actually spawned.
 
-
-    if isVolcanicTarget then
-
-        local volcanoLoaded =
-            LoadVolcano()
-
-        if not volcanoLoaded then
-
-            StealingRunning = false
-
-            return
-
-        end
-
-        local volcanoSuccess =
-            GoToVolcanoEntrance()
-
-        if not volcanoSuccess then
-
-            StealingRunning = false
-
-            return
-
-        end
-
-    end
-
-
-    -- Get the actual rendered egg only after the special Volcano route
-    -- has finished. This allows Volcanic Egg to load after the Volcano TP.
     local egg =
         GetSelectedStealingEgg()
 
 
-    if not egg
-        and isVolcanicTarget
-    then
+    if not egg then
 
-        local start =
-            os.clock()
+        -- If Volcanic Egg is selected but has not
+        -- spawned yet, wait for it instead of using
+        -- the normal egg route.
+        if SelectedStealingEggs[
+            VOLCANIC_EGG_NAME
+        ]
+        then
 
-        while StealingEnabled
-            and os.clock() - start
-                < 10
-        do
+            egg =
+                WaitForVolcanicEgg()
+
+        end
+
+
+        if not egg then
+
+            StealingRunning = false
 
             task.wait(0.25)
 
-            egg =
-                GetSelectedStealingEgg()
-
-            if egg then
-                break
-            end
+            return
 
         end
 
     end
 
 
-    if not egg then
+    -- =================================
+    -- VOLCANIC ONLY
+    -- =================================
 
-        StealingRunning = false
+    if egg.Name
+        == VOLCANIC_EGG_NAME
+    then
 
-        task.wait(0.25)
+        if not RunVolcanicRoute() then
 
-        return
+            StealingRunning = false
+
+            return
+
+        end
+
+
+        -- Re-fetch after the Volcano route because
+        -- the original model may have streamed/rebuilt.
+        egg =
+            WaitForVolcanicEgg()
+
+
+        if not egg then
+
+            StealingRunning = false
+
+            return
+
+        end
 
     end
 
+
+    -- =================================
+    -- ORIGINAL AUTO EGG FLOW
+    -- =================================
 
     local root =
         GetRoot()
@@ -1509,8 +1617,14 @@ local function RunStealingEgg()
     root =
         GetRoot()
 
-    egg =
-        GetSelectedStealingEgg()
+
+    if egg.Name == VOLCANIC_EGG_NAME then
+        egg =
+            WaitForVolcanicEgg()
+    else
+        egg =
+            GetSelectedStealingEgg()
+    end
 
 
     if not root
@@ -1562,8 +1676,13 @@ local function RunStealingEgg()
     end
 
 
-    egg =
-        GetSelectedStealingEgg()
+    if egg.Name == VOLCANIC_EGG_NAME then
+        egg =
+            WaitForVolcanicEgg()
+    else
+        egg =
+            GetSelectedStealingEgg()
+    end
 
 
     if not egg then
@@ -1610,6 +1729,10 @@ local function RunStealingEgg()
 
     end
 
+
+    -- =================================
+    -- ORIGINAL RETURN ROUTE
+    -- =================================
 
     local myPlot =
         GetMyPlot()
@@ -1716,8 +1839,6 @@ local function RunStealingEgg()
                 - startPosition
         ).Magnitude
 
-
-    -- 10 WAYPOINTS
 
     local waypoints = {}
 
@@ -1952,7 +2073,6 @@ local function RunStealingEgg()
 
     StealingRunning = false
 end
-
 
 -- =====================================
 -- MY EGGS
