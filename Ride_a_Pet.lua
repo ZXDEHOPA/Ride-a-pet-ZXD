@@ -150,9 +150,7 @@ local function UnequipCurrentTool()
         GetHumanoid()
 
     if humanoid then
-
         humanoid:UnequipTools()
-
     end
 end
 
@@ -182,12 +180,6 @@ end
 
 -- =====================================
 -- DYNAMIC EGG TRACKER
---
--- PlayerGui
--- > Main
--- > EggTracker
--- > EggsHolder
--- > Egg Frame
 -- =====================================
 
 local function GetEggsHolder()
@@ -326,7 +318,6 @@ local function GetObjectText(object)
     end
 
     if object:IsA("StringValue") then
-
         return object.Value
     end
 
@@ -338,23 +329,16 @@ end
 -- GET EGG RARITY
 -- =====================================
 
-local function GetEggRarity(
-    eggFrame
-)
+local function GetEggRarity(eggFrame)
 
     if not eggFrame then
-
-        return 0,
-            "Unknown"
-
+        return 0, "Unknown"
     end
-
 
     local eggName =
         string.lower(
             eggFrame.Name
         )
-
 
     -- Dragon / Giant = Exclusive
 
@@ -362,13 +346,9 @@ local function GetEggRarity(
         or eggName == "giant"
     then
 
-        return 8,
-            "Exclusive"
-
+        return 8, "Exclusive"
     end
 
-
-    -- Attribute
 
     local rarity =
         eggFrame:GetAttribute(
@@ -376,60 +356,40 @@ local function GetEggRarity(
         )
 
 
-    if typeof(rarity)
-        == "number"
-    then
-
-        return rarity,
-            tostring(rarity)
-
+    if typeof(rarity) == "number" then
+        return rarity, tostring(rarity)
     end
 
 
-    if typeof(rarity)
-        == "string"
-    then
+    if typeof(rarity) == "string" then
 
         local rarityNumber =
-            RarityValues[
-                rarity
-            ]
+            RarityValues[rarity]
 
         if rarityNumber then
-
-            return rarityNumber,
-                rarity
-
+            return rarityNumber, rarity
         end
 
 
         local lowerRarity =
-            string.lower(
-                rarity
-            )
+            string.lower(rarity)
 
 
         for name, value
-            in pairs(
-                RarityValues
-            )
+            in pairs(RarityValues)
         do
 
             if string.lower(name)
                 == lowerRarity
             then
 
-                return value,
-                    name
-
+                return value, name
             end
 
         end
 
     end
 
-
-    -- Search rarity objects
 
     local rarityObjectNames = {
 
@@ -441,9 +401,7 @@ local function GetEggRarity(
 
 
     for _, objectName
-        in ipairs(
-            rarityObjectNames
-        )
+        in ipairs(rarityObjectNames)
     do
 
         local object =
@@ -455,41 +413,29 @@ local function GetEggRarity(
 
         if object then
 
-            if object:IsA(
-                "NumberValue"
-            )
-            or object:IsA(
-                "IntValue"
-            )
+            if object:IsA("NumberValue")
+                or object:IsA("IntValue")
             then
 
                 return object.Value,
-                    tostring(
-                        object.Value
-                    )
+                    tostring(object.Value)
 
             end
 
 
             local text =
-                GetObjectText(
-                    object
-                )
+                GetObjectText(object)
 
 
             if text then
 
                 local lowerText =
-                    string.lower(
-                        text
-                    )
+                    string.lower(text)
 
 
                 for rarityName,
                     rarityNumber
-                    in pairs(
-                        RarityValues
-                    )
+                    in pairs(RarityValues)
                 do
 
                     if string.find(
@@ -504,7 +450,6 @@ local function GetEggRarity(
 
                         return rarityNumber,
                             rarityName
-
                     end
 
                 end
@@ -516,8 +461,7 @@ local function GetEggRarity(
     end
 
 
-    return 0,
-        "Unknown"
+    return 0, "Unknown"
 end
 
 
@@ -545,7 +489,6 @@ local function GetLuckFromEggFrame(
     then
 
         return luckAttribute
-
     end
 
 
@@ -588,31 +531,22 @@ local function GetLuckFromEggFrame(
     end
 
 
-    if luck:IsA(
-        "NumberValue"
-    )
-    or luck:IsA(
-        "IntValue"
-    )
+    if luck:IsA("NumberValue")
+        or luck:IsA("IntValue")
     then
 
         return luck.Value
-
     end
 
 
     local text =
-        GetObjectText(
-            luck
-        )
+        GetObjectText(luck)
 
 
     if text then
 
-        return ParseEggNumber(
-            text
-        ) or 0
-
+        return ParseEggNumber(text)
+            or 0
     end
 
 
@@ -628,7 +562,6 @@ local function GetLuckFromEggFrame(
         return ParseEggNumber(
             textObject.Text
         ) or 0
-
     end
 
 
@@ -663,9 +596,7 @@ local function GetDynamicEggData()
 
             local rarityRank,
                 rarityName =
-                GetEggRarity(
-                    child
-                )
+                GetEggRarity(child)
 
 
             local luck =
@@ -674,12 +605,9 @@ local function GetDynamicEggData()
                 )
 
 
-            result[
-                child.Name
-            ] = {
+            result[child.Name] = {
 
-                Name =
-                    child.Name,
+                Name = child.Name,
 
                 RarityRank =
                     rarityRank,
@@ -690,8 +618,7 @@ local function GetDynamicEggData()
                 Luck =
                     luck,
 
-                Frame =
-                    child
+                Frame = child
             }
 
         end
@@ -715,9 +642,7 @@ local function GetDynamicEggNames()
     local names = {}
 
 
-    for eggName in pairs(
-        data
-    ) do
+    for eggName in pairs(data) do
 
         table.insert(
             names,
@@ -746,7 +671,6 @@ local function GetDynamicEggNames()
                     eggA.RarityRank
                     >
                     eggB.RarityRank
-
             end
 
 
@@ -758,7 +682,6 @@ local function GetDynamicEggNames()
                     eggA.Luck
                     >
                     eggB.Luck
-
             end
 
 
@@ -825,7 +748,6 @@ local function GetMyPlot()
                 then
 
                     return plot
-
                 end
 
             end
@@ -839,9 +761,7 @@ local function GetMyPlot()
 end
 
 
-local function VerifyMyPlot(
-    plot
-)
+local function VerifyMyPlot(plot)
 
     if not plot then
         return false
@@ -902,7 +822,6 @@ local function GetMyBaseplate()
     then
 
         return baseplate
-
     end
 
 
@@ -925,7 +844,6 @@ local function GetRandomBaseplatePosition(
     then
 
         return nil
-
     end
 
 
@@ -937,16 +855,14 @@ local function GetRandomBaseplatePosition(
 
     local usableX =
         math.max(
-            size.X
-                - margin * 2,
+            size.X - margin * 2,
             0
         )
 
 
     local usableZ =
         math.max(
-            size.Z
-                - margin * 2,
+            size.Z - margin * 2,
             0
         )
 
@@ -972,8 +888,7 @@ local function GetRandomBaseplatePosition(
             PointToWorldSpace(
                 Vector3.new(
                     x,
-                    size.Y / 2
-                        + 0.1,
+                    size.Y / 2 + 0.1,
                     z
                 )
             )
@@ -1002,9 +917,7 @@ local function GetSelectedStealingEgg()
 
 
     for _, eggName
-        in ipairs(
-            names
-        )
+        in ipairs(names)
     do
 
         if SelectedStealingEggs[
@@ -1026,7 +939,6 @@ local function GetSelectedStealingEgg()
                 then
 
                     return egg
-
                 end
 
             end
@@ -1040,9 +952,7 @@ local function GetSelectedStealingEgg()
 end
 
 
-local function GetModelPosition(
-    model
-)
+local function GetModelPosition(model)
 
     if not model then
         return nil
@@ -1057,9 +967,7 @@ local function GetModelPosition(
 end
 
 
-local function GetEggPrompt(
-    egg
-)
+local function GetEggPrompt(egg)
 
     if not egg then
         return nil
@@ -1090,7 +998,6 @@ local function GetClosestBaseplatePoint(
     then
 
         return nil
-
     end
 
 
@@ -1140,9 +1047,7 @@ end
 -- STEALING WAIT
 -- =====================================
 
-local function WaitStealing(
-    duration
-)
+local function WaitStealing(duration)
 
     local start =
         os.clock()
@@ -1188,7 +1093,6 @@ local function RunStealingEgg()
         task.wait(0.25)
 
         return
-
     end
 
 
@@ -1201,14 +1105,11 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
     local eggPosition =
-        GetModelPosition(
-            egg
-        )
+        GetModelPosition(egg)
 
 
     if not eggPosition then
@@ -1216,7 +1117,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1239,7 +1139,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1257,14 +1156,11 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
     eggPosition =
-        GetModelPosition(
-            egg
-        )
+        GetModelPosition(egg)
 
 
     if not eggPosition then
@@ -1272,7 +1168,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1295,7 +1190,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1308,14 +1202,11 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
     local prompt =
-        GetEggPrompt(
-            egg
-        )
+        GetEggPrompt(egg)
 
 
     if not prompt then
@@ -1327,13 +1218,10 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
-    fireproximityprompt(
-        prompt
-    )
+    fireproximityprompt(prompt)
 
 
     if not WaitStealing(
@@ -1344,7 +1232,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1353,9 +1240,7 @@ local function RunStealingEgg()
 
 
     if not myPlot
-        or not VerifyMyPlot(
-            myPlot
-        )
+        or not VerifyMyPlot(myPlot)
     then
 
         warn(
@@ -1365,7 +1250,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1382,7 +1266,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1395,7 +1278,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1415,7 +1297,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1432,14 +1313,11 @@ local function RunStealingEgg()
         )
 
 
-    if direction.Magnitude
-        < 0.1
-    then
+    if direction.Magnitude < 0.1 then
 
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1480,9 +1358,7 @@ local function RunStealingEgg()
 
 
     for _, waypoint
-        in ipairs(
-            waypoints
-        )
+        in ipairs(waypoints)
     do
 
         if not StealingEnabled then
@@ -1490,7 +1366,6 @@ local function RunStealingEgg()
             StealingRunning = false
 
             return
-
         end
 
 
@@ -1503,7 +1378,6 @@ local function RunStealingEgg()
             StealingRunning = false
 
             return
-
         end
 
 
@@ -1521,7 +1395,6 @@ local function RunStealingEgg()
             StealingRunning = false
 
             return
-
         end
 
     end
@@ -1532,15 +1405,12 @@ local function RunStealingEgg()
 
 
     if not myPlot
-        or not VerifyMyPlot(
-            myPlot
-        )
+        or not VerifyMyPlot(myPlot)
     then
 
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1553,7 +1423,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1566,7 +1435,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1582,7 +1450,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1606,7 +1473,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1634,7 +1500,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1643,15 +1508,12 @@ local function RunStealingEgg()
 
 
     if not myPlot
-        or not VerifyMyPlot(
-            myPlot
-        )
+        or not VerifyMyPlot(myPlot)
     then
 
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1664,7 +1526,6 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
 
@@ -1677,14 +1538,22 @@ local function RunStealingEgg()
         StealingRunning = false
 
         return
-
     end
 
+
+    -- Teleport to middle of owned Baseplate
 
     root.CFrame =
         CFrame.new(
             baseplate.Position
         )
+
+
+    -- Unequip whatever is being held
+
+    task.wait(0.15)
+
+    UnequipCurrentTool()
 
 
     StealingRunning = false
@@ -1751,11 +1620,11 @@ local function GetBackpackEgg()
     local availableEggs = {}
 
 
+    -- First use the dynamic tracker
+
     for eggName,
         eggData
-        in pairs(
-            dynamicData
-        )
+        in pairs(dynamicData)
     do
 
         if SelectedPlaceEggs[
@@ -1769,13 +1638,99 @@ local function GetBackpackEgg()
                 )
 
 
-            if egg then
+            if egg
+                and egg:IsA("Tool")
+            then
 
                 table.insert(
                     availableEggs,
                     {
                         Tool = egg,
                         Data = eggData
+                    }
+                )
+
+            end
+
+        end
+
+    end
+
+
+    -- Fallback: search Backpack directly.
+    -- This fixes cases where the UI tracker
+    -- hasn't loaded/refreshed yet.
+
+    if #availableEggs == 0 then
+
+        for _, egg
+            in ipairs(
+                backpack:GetChildren()
+            )
+        do
+
+            if egg:IsA("Tool")
+                and SelectedPlaceEggs[
+                    egg.Name
+                ]
+            then
+
+                local eggFrame =
+                    nil
+
+                local tracker =
+                    GetEggsHolder()
+
+
+                if tracker then
+
+                    eggFrame =
+                        tracker:FindFirstChild(
+                            egg.Name,
+                            true
+                        )
+
+                end
+
+
+                local rarityRank = 0
+                local rarityName = "Unknown"
+                local luck = 0
+
+
+                if eggFrame then
+
+                    rarityRank,
+                        rarityName =
+                        GetEggRarity(
+                            eggFrame
+                        )
+
+                    luck =
+                        GetLuckFromEggFrame(
+                            eggFrame
+                        )
+
+                end
+
+
+                table.insert(
+                    availableEggs,
+                    {
+                        Tool = egg,
+
+                        Data = {
+                            Name = egg.Name,
+
+                            RarityRank =
+                                rarityRank,
+
+                            RarityName =
+                                rarityName,
+
+                            Luck =
+                                luck
+                        }
                     }
                 )
 
@@ -1815,7 +1770,6 @@ local function GetBackpackEgg()
                     dataA.RarityRank
                     >
                     dataB.RarityRank
-
             end
 
 
@@ -1827,7 +1781,6 @@ local function GetBackpackEgg()
                     dataA.Luck
                     >
                     dataB.Luck
-
             end
 
 
@@ -1901,7 +1854,6 @@ local function GetBackpackEgg()
                             valueA
                             <
                             valueB
-
                     end
 
                 end
@@ -1931,9 +1883,7 @@ end
 -- EQUIP EGG
 -- =====================================
 
-local function EquipEgg(
-    egg
-)
+local function EquipEgg(egg)
 
     local humanoid =
         GetHumanoid()
@@ -1954,7 +1904,6 @@ local function EquipEgg(
     then
 
         return false
-
     end
 
 
@@ -1984,13 +1933,10 @@ local function EquipEgg(
         )
 
         return false
-
     end
 
 
-    humanoid:EquipTool(
-        egg
-    )
+    humanoid:EquipTool(egg)
 
 
     local start =
@@ -2007,7 +1953,6 @@ local function EquipEgg(
         then
 
             return true
-
         end
 
 
@@ -2093,7 +2038,6 @@ local function GetHatchPrompt()
             then
 
                 continue
-
             end
 
 
@@ -2102,13 +2046,8 @@ local function GetHatchPrompt()
             then
 
                 continue
-
             end
 
-
-            -- =============================
-            -- OWNED PLOT FOUND
-            -- =============================
 
             local eggs =
                 plot:FindFirstChild(
@@ -2121,10 +2060,6 @@ local function GetHatchPrompt()
             end
 
 
-            -- =============================
-            -- EGG
-            -- =============================
-
             local egg =
                 eggs:FindFirstChild(
                     "Egg"
@@ -2136,10 +2071,6 @@ local function GetHatchPrompt()
             end
 
 
-            -- =============================
-            -- ROOT PART
-            -- =============================
-
             local rootPart =
                 egg:FindFirstChild(
                     "RootPart"
@@ -2150,10 +2081,6 @@ local function GetHatchPrompt()
                 return nil
             end
 
-
-            -- =============================
-            -- HATCH PROMPT
-            -- =============================
 
             local hatch =
                 rootPart:FindFirstChild(
@@ -2168,7 +2095,6 @@ local function GetHatchPrompt()
             then
 
                 return hatch
-
             end
 
 
@@ -2201,9 +2127,7 @@ local function PlaceSelectedEgg()
 
 
     if not plot
-        or not VerifyMyPlot(
-            plot
-        )
+        or not VerifyMyPlot(plot)
     then
 
         return false
@@ -2244,14 +2168,17 @@ local function PlaceSelectedEgg()
     end
 
 
+    local backpack =
+        Player:FindFirstChild(
+            "Backpack"
+        )
+
+
     local oldEggCount =
         GetEggCount()
 
 
-    if not EquipEgg(
-        egg
-    )
-    then
+    if not EquipEgg(egg) then
 
         warn(
             "Auto Place: Could not equip "
@@ -2259,24 +2186,22 @@ local function PlaceSelectedEgg()
         )
 
         return false
-
     end
 
+
+    -- Re-check plot after equipping
 
     plot =
         GetMyPlot()
 
 
     if not plot
-        or not VerifyMyPlot(
-            plot
-        )
+        or not VerifyMyPlot(plot)
     then
 
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2295,7 +2220,6 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2310,7 +2234,6 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2334,9 +2257,10 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
+
+    -- Give the server time to place it
 
     task.wait(0.8)
 
@@ -2344,6 +2268,8 @@ local function PlaceSelectedEgg()
     local newEggCount =
         GetEggCount()
 
+
+    -- Normal success
 
     if newEggCount
         > oldEggCount
@@ -2353,7 +2279,6 @@ local function PlaceSelectedEgg()
 
             WaitingForHatch =
                 true
-
         end
 
 
@@ -2362,9 +2287,10 @@ local function PlaceSelectedEgg()
         )
 
         return true
-
     end
 
+
+    -- Second check
 
     task.wait(0.5)
 
@@ -2381,7 +2307,6 @@ local function PlaceSelectedEgg()
 
             WaitingForHatch =
                 true
-
         end
 
 
@@ -2390,11 +2315,58 @@ local function PlaceSelectedEgg()
         )
 
         return true
+    end
 
+
+    -- Some versions remove the Tool
+    -- without updating the folder instantly.
+
+    local stillHasEgg = false
+
+
+    if backpack
+        and backpack:FindFirstChild(
+            egg.Name
+        )
+    then
+
+        stillHasEgg = true
+    end
+
+
+    local character =
+        GetCharacter()
+
+
+    if character
+        and character:FindFirstChild(
+            egg.Name
+        )
+    then
+
+        stillHasEgg = true
+    end
+
+
+    if not stillHasEgg then
+
+        if AutoHatchEnabled then
+
+            WaitingForHatch =
+                true
+        end
+
+
+        print(
+            "Auto Place: Egg accepted."
+        )
+
+        return true
     end
 
 
     humanoid:UnequipTools()
+
 
     WaitingForHatch =
         false
@@ -2468,8 +2440,6 @@ local function HatchEgg()
     end
 
 
-    -- Wait until the Hatch prompt disappears
-
     local start =
         os.clock()
 
@@ -2520,7 +2490,6 @@ if #EggOptions == 0 then
         table.clone(
             FallbackEggs
         )
-
 end
 
 
@@ -2595,7 +2564,6 @@ local StealingDropdown =
                     SelectedStealingEggs[
                         Options
                     ] = true
-
                 end
 
             end
@@ -2634,7 +2602,6 @@ Tab:CreateToggle({
                 StopMovement()
 
                 return
-
             end
 
 
@@ -2719,7 +2686,6 @@ local PlaceDropdown =
                     SelectedPlaceEggs[
                         Options
                     ] = true
-
                 end
 
             end
@@ -2763,7 +2729,6 @@ task.spawn(
 
 
                 break
-
             end
 
         end
@@ -2847,7 +2812,6 @@ Tab:CreateToggle({
                     false
 
                 return
-
             end
 
 
@@ -2915,7 +2879,6 @@ Tab:CreateToggle({
                     false
 
                 return
-
             end
 
 
