@@ -1058,6 +1058,7 @@ local function GetSelectedStealingEgg()
     return nil
 end
 
+
 local function GetModelPosition(
     model
 )
@@ -1344,7 +1345,7 @@ local function RunVolcanicRoute()
     )
 
 
-    -- TP to the Volcano Model first.
+    -- TP to the Volcano Model FIRST.
     root.CFrame =
         volcano:GetPivot()
 
@@ -1487,51 +1488,74 @@ local function RunStealingEgg()
     StealingRunning = true
 
 
-    -- IMPORTANT:
-    -- Normal eggs never enter the Volcano route.
-    -- The Volcano route is activated only when
-    -- the selected Volcanic Egg has actually spawned.
+    -- =================================
+    -- AUTO EGG TARGET PRIORITY
+    -- =================================
+    -- Volcanic Egg is special treatment.
+    --
+    -- If Volcanic Egg exists in RenderedEggs,
+    -- it gets priority regardless of the
+    -- Stealing Egg dropdown.
+    --
+    -- If it does not exist, the normal
+    -- selected-egg system is used.
 
-    local egg =
-        GetSelectedStealingEgg()
+    local egg = nil
+    local usingVolcanicRoute = false
 
 
-    if not egg then
+    local renderedEggs =
+        workspace:FindFirstChild(
+            "RenderedEggs"
+        )
 
-        -- If Volcanic Egg is selected but has not
-        -- spawned yet, wait for it instead of using
-        -- the normal egg route.
-        if SelectedStealingEggs[
-            VOLCANIC_EGG_NAME
-        ]
+
+    if renderedEggs then
+
+        local volcanicEgg =
+            renderedEggs:FindFirstChild(
+                VOLCANIC_EGG_NAME
+            )
+
+
+        if volcanicEgg
+            and volcanicEgg:IsA("Model")
         then
 
-            egg =
-                WaitForVolcanicEgg()
-
-        end
-
-
-        if not egg then
-
-            StealingRunning = false
-
-            task.wait(0.25)
-
-            return
+            egg = volcanicEgg
+            usingVolcanicRoute = true
 
         end
 
     end
 
 
+    -- No Volcanic Egg exists.
+    -- Use the normal selected egg.
+    if not egg then
+
+        egg =
+            GetSelectedStealingEgg()
+
+    end
+
+
+    if not egg then
+
+        StealingRunning = false
+
+        task.wait(0.25)
+
+        return
+
+    end
+
+
     -- =================================
-    -- VOLCANIC ONLY
+    -- VOLCANIC SPECIAL ROUTE
     -- =================================
 
-    if egg.Name
-        == VOLCANIC_EGG_NAME
-    then
+    if usingVolcanicRoute then
 
         if not RunVolcanicRoute() then
 
@@ -2073,6 +2097,7 @@ local function RunStealingEgg()
 
     StealingRunning = false
 end
+
 
 -- =====================================
 -- MY EGGS
