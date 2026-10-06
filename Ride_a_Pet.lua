@@ -12,9 +12,9 @@ local Player =
     Players.LocalPlayer
 
 
--- =====================================
+--  
 -- WINDOW
--- =====================================
+--  
 
 local Window =
     Rayfield:CreateWindow({
@@ -39,9 +39,9 @@ local Tab =
     )
 
 
--- =====================================
+--  
 -- REMOTES
--- =====================================
+--  
 
 local Upgrades =
     ReplicatedStorage
@@ -57,9 +57,9 @@ local EggPlaced =
         .EggPlaced
 
 
--- =====================================
+--  
 -- STATES
--- =====================================
+--  
 
 local StealingEnabled = false
 local StealingRunning = false
@@ -79,9 +79,9 @@ local SelectedStealingEggs = {}
 local SelectedPlaceEggs = {}
 
 
--- =====================================
+--  
 -- SETTINGS
--- =====================================
+--  
 
 local LOAD_WAIT = 1
 local AFTER_EGG_WAIT = 0.5
@@ -104,9 +104,9 @@ local FallbackEggs = {
 }
 
 
--- =====================================
+--  
 -- CHARACTER
--- =====================================
+--  
 
 local function GetCharacter()
 
@@ -180,7 +180,7 @@ local function StopMovement()
 end
 
 
--- =====================================
+--  
 -- DYNAMIC EGG TRACKER
 --
 -- PlayerGui
@@ -188,7 +188,7 @@ end
 -- > EggTracker
 -- > EggsHolder
 -- > Egg Frame
--- =====================================
+--  
 
 local function GetEggsHolder()
 
@@ -225,9 +225,9 @@ local function GetEggsHolder()
 end
 
 
--- =====================================
+--  
 -- NUMBER PARSER
--- =====================================
+--  
 
 local function ParseEggNumber(text)
 
@@ -290,9 +290,9 @@ local function ParseEggNumber(text)
 end
 
 
--- =====================================
+--  
 -- RARITY VALUES
--- =====================================
+--  
 
 local RarityValues = {
 
@@ -307,9 +307,9 @@ local RarityValues = {
 }
 
 
--- =====================================
+--  
 -- GET OBJECT TEXT
--- =====================================
+--  
 
 local function GetObjectText(object)
 
@@ -334,9 +334,9 @@ local function GetObjectText(object)
 end
 
 
--- =====================================
+--  
 -- GET EGG RARITY
--- =====================================
+--  
 
 local function GetEggRarity(
     eggFrame
@@ -521,9 +521,9 @@ local function GetEggRarity(
 end
 
 
--- =====================================
+--  
 -- GET LUCK
--- =====================================
+--  
 
 local function GetLuckFromEggFrame(
     eggFrame
@@ -636,9 +636,9 @@ local function GetLuckFromEggFrame(
 end
 
 
--- =====================================
+--  
 -- GET DYNAMIC EGG DATA
--- =====================================
+--  
 
 local function GetDynamicEggData()
 
@@ -703,9 +703,9 @@ local function GetDynamicEggData()
 end
 
 
--- =====================================
+--  
 -- SORT EGG NAMES
--- =====================================
+--  
 
 local function GetDynamicEggNames()
 
@@ -775,9 +775,9 @@ local function GetDynamicEggNames()
 end
 
 
--- =====================================
+--  
 -- OWNED PLOT
--- =====================================
+--  
 
 local function GetMyPlot()
 
@@ -874,9 +874,9 @@ local function VerifyMyPlot(
 end
 
 
--- =====================================
+--  
 -- OWNED BASEPLATE
--- =====================================
+--  
 
 local function GetMyBaseplate()
 
@@ -910,9 +910,9 @@ local function GetMyBaseplate()
 end
 
 
--- =====================================
+--  
 -- RANDOM BASEPLATE POSITION
--- =====================================
+--  
 
 local function GetRandomBaseplatePosition(
     baseplate
@@ -980,9 +980,9 @@ local function GetRandomBaseplatePosition(
 end
 
 
--- =====================================
+--  
 -- RENDERED EGG
--- =====================================
+--  
 
 local function GetSelectedStealingEgg()
 
@@ -1093,9 +1093,9 @@ local function GetEggPrompt(
 end
 
 
--- =====================================
+--  
 -- BASEPLATE POINT
--- =====================================
+--  
 
 local function GetClosestBaseplatePoint(
     baseplate,
@@ -1155,9 +1155,9 @@ local function GetClosestBaseplatePoint(
 end
 
 
--- =====================================
+--  
 -- STEALING WAIT
--- =====================================
+--  
 
 local function WaitStealing(
     duration
@@ -1182,9 +1182,9 @@ local function WaitStealing(
 end
 
 
--- =====================================
+--  
 -- STEALING
--- =====================================
+--  
 
 local TweenService =
     game:GetService("TweenService")
@@ -1204,9 +1204,9 @@ local VOLCANO_TWEEN_TIME = 1
 local VOLCANO_LOAD_TIMEOUT = 15
 
 
--- =====================================
+--  
 -- VOLCANIC EGG HELPERS
--- =====================================
+--  
 
 local function GetVolcanoModel()
 
@@ -1474,9 +1474,9 @@ local function RunVolcanicRoute()
 end
 
 
--- =====================================
+--  
 -- STEALING
--- =====================================
+--  
 
 local function RunStealingEgg()
 
@@ -1488,9 +1488,9 @@ local function RunStealingEgg()
     StealingRunning = true
 
 
-    -- =================================
+    --  ====
     -- AUTO EGG TARGET PRIORITY
-    -- =================================
+    --  ====
     -- Volcanic Egg is special treatment.
     --
     -- If Volcanic Egg exists in RenderedEggs,
@@ -1551,9 +1551,9 @@ local function RunStealingEgg()
     end
 
 
-    -- =================================
+    --  ====
     -- VOLCANIC SPECIAL ROUTE
-    -- =================================
+    --  ====
 
     if usingVolcanicRoute then
 
@@ -1583,9 +1583,9 @@ local function RunStealingEgg()
     end
 
 
-    -- =================================
+    --  ====
     -- ORIGINAL AUTO EGG FLOW
-    -- =================================
+    --  ====
 
     local root =
         GetRoot()
@@ -1754,9 +1754,9 @@ local function RunStealingEgg()
     end
 
 
-    -- =================================
+    --  ====
     -- ORIGINAL RETURN ROUTE
-    -- =================================
+    --  ====
 
     local myPlot =
         GetMyPlot()
@@ -2099,9 +2099,9 @@ local function RunStealingEgg()
 end
 
 
--- =====================================
+--  
 -- MY EGGS
--- =====================================
+--  
 
 local function GetMyEggsFolder()
 
@@ -2135,9 +2135,9 @@ local function GetEggCount()
 end
 
 
--- =====================================
+--  
 -- BACKPACK EGG
--- =====================================
+--  
 
 local function GetBackpackEgg()
 
@@ -2335,9 +2335,9 @@ local function GetBackpackEgg()
 end
 
 
--- =====================================
+--  
 -- EQUIP EGG
--- =====================================
+--  
 
 local function EquipEgg(
     egg
@@ -2440,7 +2440,7 @@ local function EquipEgg(
 end
 
 
--- =====================================
+--  
 -- HATCH PROMPT
 --
 -- Workspace
@@ -2452,7 +2452,7 @@ end
 -- > Egg
 -- > RootPart
 -- > Hatch
--- =====================================
+--  
 
 local function GetHatchPrompt()
 
@@ -2514,9 +2514,9 @@ local function GetHatchPrompt()
             end
 
 
-            -- =============================
+            --  
             -- OWNED PLOT FOUND
-            -- =============================
+            --  
 
             local eggs =
                 plot:FindFirstChild(
@@ -2529,9 +2529,9 @@ local function GetHatchPrompt()
             end
 
 
-            -- =============================
+            --  
             -- EGG
-            -- =============================
+            --  
 
             local egg =
                 eggs:FindFirstChild(
@@ -2544,9 +2544,9 @@ local function GetHatchPrompt()
             end
 
 
-            -- =============================
+            --  
             -- ROOT PART
-            -- =============================
+            --  
 
             local rootPart =
                 egg:FindFirstChild(
@@ -2559,9 +2559,9 @@ local function GetHatchPrompt()
             end
 
 
-            -- =============================
+            --  
             -- HATCH PROMPT
-            -- =============================
+            --  
 
             local hatch =
                 rootPart:FindFirstChild(
@@ -2589,9 +2589,9 @@ local function GetHatchPrompt()
 end
 
 
--- =====================================
+--  
 -- AUTO PLACE
--- =====================================
+--  
 
 local function PlaceSelectedEgg()
 
@@ -2817,9 +2817,9 @@ local function PlaceSelectedEgg()
 end
 
 
--- =====================================
+--  
 -- AUTO HATCH
--- =====================================
+--  
 
 local function HatchEgg()
 
@@ -2914,9 +2914,9 @@ local function HatchEgg()
 end
 
 
--- =====================================
+--  
 -- INITIAL EGG OPTIONS
--- =====================================
+--  
 
 local EggOptions =
     GetDynamicEggNames()
@@ -2946,9 +2946,9 @@ if EggOptions[1] then
 end
 
 
--- =====================================
+--  
 -- STEALING EGG DROPDOWN
--- =====================================
+--  
 
 local StealingDropdown =
     Tab:CreateDropdown({
@@ -3010,9 +3010,9 @@ local StealingDropdown =
     })
 
 
--- =====================================
+--  
 -- AUTO EGG
--- =====================================
+--  
 
 Tab:CreateToggle({
 
@@ -3070,9 +3070,9 @@ Tab:CreateToggle({
 })
 
 
--- =====================================
+--  
 -- PLACE EGG DROPDOWN
--- =====================================
+--  
 
 local PlaceDropdown =
     Tab:CreateDropdown({
@@ -3134,9 +3134,9 @@ local PlaceDropdown =
     })
 
 
--- =====================================
+--  
 -- REFRESH DYNAMIC EGG LIST
--- =====================================
+--  
 
 task.spawn(
     function()
@@ -3180,9 +3180,9 @@ task.spawn(
 )
 
 
--- =====================================
+--  
 -- WEIGHT PREFERENCE
--- =====================================
+--  
 
 Tab:CreateDropdown({
 
@@ -3223,9 +3223,9 @@ Tab:CreateDropdown({
 })
 
 
--- =====================================
+--  
 -- AUTO PLACE EGG
--- =====================================
+--  
 
 Tab:CreateToggle({
 
@@ -3290,9 +3290,9 @@ Tab:CreateToggle({
 })
 
 
--- =====================================
+--  
 -- AUTO HATCH EGG
--- =====================================
+--  
 
 Tab:CreateToggle({
 
@@ -3370,9 +3370,9 @@ Tab:CreateToggle({
 })
 
 
--- =====================================
+--  
 -- LUCK UPGRADE
--- =====================================
+--  
 
 Tab:CreateDropdown({
 
@@ -3411,9 +3411,9 @@ Tab:CreateDropdown({
 })
 
 
--- =====================================
+-- 
 -- AUTO LUCK UPGRADE
--- =====================================
+--  
 
 Tab:CreateToggle({
 
