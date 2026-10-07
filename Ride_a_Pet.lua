@@ -349,12 +349,10 @@ local function GetEggRarity(
 
     end
 
-
     local eggName =
         string.lower(
             eggFrame.Name
         )
-
 
     -- Dragon / Giant = Exclusive
 
@@ -367,14 +365,12 @@ local function GetEggRarity(
 
     end
 
-
     -- Attribute
 
     local rarity =
         eggFrame:GetAttribute(
             "Rarity"
         )
-
 
     if typeof(rarity)
         == "number"
@@ -384,7 +380,6 @@ local function GetEggRarity(
             tostring(rarity)
 
     end
-
 
     if typeof(rarity)
         == "string"
@@ -402,12 +397,10 @@ local function GetEggRarity(
 
         end
 
-
         local lowerRarity =
             string.lower(
                 rarity
             )
-
 
         for name, value
             in pairs(
@@ -428,7 +421,6 @@ local function GetEggRarity(
 
     end
 
-
     -- Search rarity objects
 
     local rarityObjectNames = {
@@ -438,7 +430,6 @@ local function GetEggRarity(
         "RarityLabel",
         "EggRarity"
     }
-
 
     for _, objectName
         in ipairs(
@@ -451,7 +442,6 @@ local function GetEggRarity(
                 objectName,
                 true
             )
-
 
         if object then
 
@@ -470,12 +460,10 @@ local function GetEggRarity(
 
             end
 
-
             local text =
                 GetObjectText(
                     object
                 )
-
 
             if text then
 
@@ -483,7 +471,6 @@ local function GetEggRarity(
                     string.lower(
                         text
                     )
-
 
                 for rarityName,
                     rarityNumber
@@ -515,7 +502,6 @@ local function GetEggRarity(
 
     end
 
-
     return 0,
         "Unknown"
 end
@@ -533,12 +519,10 @@ local function GetLuckFromEggFrame(
         return 0
     end
 
-
     local luckAttribute =
         eggFrame:GetAttribute(
             "Luck"
         )
-
 
     if typeof(luckAttribute)
         == "number"
@@ -547,7 +531,6 @@ local function GetLuckFromEggFrame(
         return luckAttribute
 
     end
-
 
     if typeof(luckAttribute)
         == "string"
@@ -564,17 +547,14 @@ local function GetLuckFromEggFrame(
 
     end
 
-
     local luckDisplay =
         eggFrame:FindFirstChild(
             "LuckDisplay"
         )
 
-
     if not luckDisplay then
         return 0
     end
-
 
     local luck =
         luckDisplay:FindFirstChild(
@@ -582,11 +562,9 @@ local function GetLuckFromEggFrame(
             true
         )
 
-
     if not luck then
         return 0
     end
-
 
     if luck:IsA(
         "NumberValue"
@@ -600,12 +578,10 @@ local function GetLuckFromEggFrame(
 
     end
 
-
     local text =
         GetObjectText(
             luck
         )
-
 
     if text then
 
@@ -615,13 +591,11 @@ local function GetLuckFromEggFrame(
 
     end
 
-
     local textObject =
         luck:FindFirstChildWhichIsA(
             "TextLabel",
             true
         )
-
 
     if textObject then
 
@@ -630,7 +604,6 @@ local function GetLuckFromEggFrame(
         ) or 0
 
     end
-
 
     return 0
 end
@@ -649,9 +622,7 @@ local function GetDynamicEggData()
         return {}
     end
 
-
     local result = {}
-
 
     for _, child
         in ipairs(
@@ -667,12 +638,10 @@ local function GetDynamicEggData()
                     child
                 )
 
-
             local luck =
                 GetLuckFromEggFrame(
                     child
                 )
-
 
             result[
                 child.Name
@@ -698,7 +667,6 @@ local function GetDynamicEggData()
 
     end
 
-
     return result
 end
 
@@ -714,7 +682,6 @@ local function GetDynamicEggNames()
 
     local names = {}
 
-
     for eggName in pairs(
         data
     ) do
@@ -726,7 +693,6 @@ local function GetDynamicEggNames()
 
     end
 
-
     table.sort(
         names,
         function(a, b)
@@ -736,7 +702,6 @@ local function GetDynamicEggNames()
 
             local eggB =
                 data[b]
-
 
             if eggA.RarityRank
                 ~= eggB.RarityRank
@@ -749,7 +714,6 @@ local function GetDynamicEggNames()
 
             end
 
-
             if eggA.Luck
                 ~= eggB.Luck
             then
@@ -761,7 +725,6 @@ local function GetDynamicEggNames()
 
             end
 
-
             return
                 string.lower(a)
                 <
@@ -769,7 +732,6 @@ local function GetDynamicEggNames()
 
         end
     )
-
 
     return names
 end
@@ -786,11 +748,9 @@ local function GetMyPlot()
             "Plots"
         )
 
-
     if not plots then
         return nil
     end
-
 
     for _, plot
         in ipairs(
@@ -807,14 +767,12 @@ local function GetMyPlot()
                     "Data"
                 )
 
-
             if data then
 
                 local owner =
                     data:FindFirstChild(
                         "Owner"
                     )
-
 
                 if owner
                     and owner:IsA(
@@ -834,7 +792,6 @@ local function GetMyPlot()
 
     end
 
-
     return nil
 end
 
@@ -847,23 +804,19 @@ local function VerifyMyPlot(
         return false
     end
 
-
     local data =
         plot:FindFirstChild(
             "Data"
         )
 
-
     if not data then
         return false
     end
-
 
     local owner =
         data:FindFirstChild(
             "Owner"
         )
-
 
     return owner
         and owner:IsA(
@@ -883,17 +836,14 @@ local function GetMyBaseplate()
     local plot =
         GetMyPlot()
 
-
     if not plot then
         return nil
     end
-
 
     local baseplate =
         plot:FindFirstChild(
             "Baseplate"
         )
-
 
     if baseplate
         and baseplate:IsA(
@@ -904,7 +854,6 @@ local function GetMyBaseplate()
         return baseplate
 
     end
-
 
     return nil
 end
@@ -928,12 +877,10 @@ local function GetRandomBaseplatePosition(
 
     end
 
-
     local size =
         baseplate.Size
 
     local margin = 1
-
 
     local usableX =
         math.max(
@@ -942,14 +889,12 @@ local function GetRandomBaseplatePosition(
             0
         )
 
-
     local usableZ =
         math.max(
             size.Z
                 - margin * 2,
             0
         )
-
 
     local x =
         (
@@ -958,14 +903,12 @@ local function GetRandomBaseplatePosition(
         )
         * usableX
 
-
     local z =
         (
             math.random()
             - 0.5
         )
         * usableZ
-
 
     return
         baseplate.CFrame:
@@ -991,34 +934,12 @@ local function GetSelectedStealingEgg()
             "RenderedEggs"
         )
 
-
     if not renderedEggs then
         return nil
     end
 
-
-    -- Volcanic Egg is checked directly because it may
-    -- appear in RenderedEggs before the normal tracker updates.
-
-    if SelectedStealingEggs["Volcanic Egg"] then
-
-        local volcanicEgg =
-            renderedEggs:FindFirstChild(
-                "Volcanic Egg"
-            )
-
-        if volcanicEgg
-            and volcanicEgg:IsA("Model")
-        then
-            return volcanicEgg
-        end
-
-    end
-
-
     local names =
         GetDynamicEggNames()
-
 
     for _, eggName
         in ipairs(
@@ -1054,7 +975,6 @@ local function GetSelectedStealingEgg()
 
     end
 
-
     return nil
 end
 
@@ -1067,10 +987,8 @@ local function GetModelPosition(
         return nil
     end
 
-
     local cf =
         model:GetBoundingBox()
-
 
     return cf.Position
 end
@@ -1083,7 +1001,6 @@ local function GetEggPrompt(
     if not egg then
         return nil
     end
-
 
     return
         egg:FindFirstChildWhichIsA(
@@ -1112,17 +1029,14 @@ local function GetClosestBaseplatePoint(
 
     end
 
-
     local localPosition =
         baseplate.CFrame:
             PointToObjectSpace(
                 position
             )
 
-
     local half =
         baseplate.Size / 2
-
 
     local closest =
         Vector3.new(
@@ -1146,7 +1060,6 @@ local function GetClosestBaseplatePoint(
             )
         )
 
-
     return
         baseplate.CFrame:
             PointToWorldSpace(
@@ -1166,7 +1079,6 @@ local function WaitStealing(
     local start =
         os.clock()
 
-
     while StealingEnabled
         and os.clock()
             - start
@@ -1176,7 +1088,6 @@ local function WaitStealing(
         task.wait(0.05)
 
     end
-
 
     return StealingEnabled
 end
@@ -1188,7 +1099,6 @@ end
 
 local TweenService =
     game:GetService("TweenService")
-
 
 local VOLCANIC_EGG_NAME =
     "Volcanic Egg"
@@ -1215,13 +1125,13 @@ local function GetVolcanoModel()
             "Volcano"
         )
 
-
     if volcano
         and volcano:IsA("Model")
     then
-        return volcano
-    end
 
+        return volcano
+
+    end
 
     return nil
 end
@@ -1232,11 +1142,9 @@ local function GetVolcanoEntrance()
     local volcano =
         GetVolcanoModel()
 
-
     if not volcano then
         return nil
     end
-
 
     local entrance =
         volcano:FindFirstChild(
@@ -1244,13 +1152,13 @@ local function GetVolcanoEntrance()
             true
         )
 
-
     if entrance
         and entrance:IsA("BasePart")
     then
-        return entrance
-    end
 
+        return entrance
+
+    end
 
     return nil
 end
@@ -1261,14 +1169,12 @@ local function WaitForVolcanicEgg()
     local startTime =
         os.clock()
 
-
     while StealingEnabled do
 
         local renderedEggs =
             workspace:FindFirstChild(
                 "RenderedEggs"
             )
-
 
         if renderedEggs then
 
@@ -1277,26 +1183,25 @@ local function WaitForVolcanicEgg()
                     VOLCANIC_EGG_NAME
                 )
 
-
             if egg
                 and egg:IsA("Model")
             then
+
                 return egg
+
             end
 
         end
 
-
         if os.clock() - startTime
             >= VOLCANO_LOAD_TIMEOUT
         then
+
             return nil
         end
 
-
         task.wait(0.25)
     end
-
 
     return nil
 end
@@ -1308,19 +1213,15 @@ local function RunVolcanicRoute()
         return false
     end
 
-
     local root =
         GetRoot()
-
 
     if not root then
         return false
     end
 
-
     local volcano =
         GetVolcanoModel()
-
 
     if not volcano then
 
@@ -1330,7 +1231,6 @@ local function RunVolcanicRoute()
 
         return false
     end
-
 
     -- Ask Roblox to stream the Volcano area.
     pcall(
@@ -1344,14 +1244,24 @@ local function RunVolcanicRoute()
         end
     )
 
+    if not StealingEnabled then
+        return false
+    end
 
-    -- TP to the Volcano Model FIRST.
+    -- Volcano logic starts after the dedicated
+    -- 3-second wait that happens at WP4.
+    root =
+        GetRoot()
+
+    if not root then
+        return false
+    end
+
+    -- TP to the Volcano Model.
     root.CFrame =
         volcano:GetPivot()
 
-
     task.wait(0.5)
-
 
     -- VolcanoEntrance may not exist until the
     -- Volcano area has streamed in.
@@ -1360,17 +1270,14 @@ local function RunVolcanicRoute()
     local startTime =
         os.clock()
 
-
     while StealingEnabled do
 
         entrance =
             GetVolcanoEntrance()
 
-
         if entrance then
             break
         end
-
 
         if os.clock() - startTime
             >= VOLCANO_LOAD_TIMEOUT
@@ -1383,46 +1290,36 @@ local function RunVolcanicRoute()
             return false
         end
 
-
         task.wait(0.25)
     end
-
 
     if not entrance then
         return false
     end
 
-
     root =
         GetRoot()
-
 
     if not root then
         return false
     end
-
 
     -- TP to VolcanoEntrance.
     root.CFrame =
         entrance.CFrame
 
-
     task.wait(0.25)
-
 
     if not StealingEnabled then
         return false
     end
 
-
     root =
         GetRoot()
-
 
     if not root then
         return false
     end
-
 
     -- Tween to the exact Volcano destination.
     local tween =
@@ -1444,31 +1341,12 @@ local function RunVolcanicRoute()
             }
         )
 
-
     tween:Play()
     tween.Completed:Wait()
-
 
     if not StealingEnabled then
         return false
     end
-
-
-    -- The actual egg must exist before the
-    -- normal stealing sequence continues.
-    local volcanicEgg =
-        WaitForVolcanicEgg()
-
-
-    if not volcanicEgg then
-
-        warn(
-            "Volcanic Egg: Egg did not spawn."
-        )
-
-        return false
-    end
-
 
     return true
 end
@@ -1484,56 +1362,319 @@ local function RunStealingEgg()
         return
     end
 
-
     StealingRunning = true
 
+    local function Finish()
+        StealingRunning = false
+    end
 
-    --  ====
-    -- AUTO EGG TARGET PRIORITY
-    --  ====
-    -- Volcanic Egg is special treatment.
+    local function TeleportTo(position)
+
+        if not StealingEnabled then
+            return false
+        end
+
+        local root =
+            GetRoot()
+
+        if not root then
+            return false
+        end
+
+        root.CFrame =
+            CFrame.new(position)
+
+        return WaitStealing(
+            WAYPOINT_WAIT
+        )
+    end
+
+    local function BuildWaypoints(
+        startPosition,
+        targetPosition,
+        count
+    )
+
+        local waypoints = {}
+
+        local flatStart =
+            Vector3.new(
+                startPosition.X,
+                0,
+                startPosition.Z
+            )
+
+        local flatTarget =
+            Vector3.new(
+                targetPosition.X,
+                0,
+                targetPosition.Z
+            )
+
+        local flatDirection =
+            flatTarget
+                - flatStart
+
+        if flatDirection.Magnitude < 0.1 then
+            return waypoints
+        end
+
+        flatDirection =
+            flatDirection.Unit
+
+        local totalDistance =
+            (
+                flatTarget
+                    - flatStart
+            ).Magnitude
+
+        for i = 1, count do
+
+            local fraction =
+                i / (count + 1)
+
+            local flatPoint =
+                flatStart
+                    + flatDirection
+                    * (
+                        totalDistance
+                        * fraction
+                    )
+
+            local y =
+                startPosition.Y
+                + (
+                    targetPosition.Y
+                    - startPosition.Y
+                )
+                * fraction
+
+            table.insert(
+                waypoints,
+                Vector3.new(
+                    flatPoint.X,
+                    y,
+                    flatPoint.Z
+                )
+            )
+
+        end
+
+        return waypoints
+    end
+
+    local function RunWaypointList(
+        waypoints
+    )
+
+        for _, waypoint
+            in ipairs(waypoints)
+        do
+
+            if not TeleportTo(
+                waypoint
+            )
+            then
+
+                return false
+
+            end
+
+        end
+
+        return StealingEnabled
+    end
+
+
+    -- ============================================================
+    -- ACTUAL SELECTED EGG
     --
-    -- If Volcanic Egg exists in RenderedEggs,
-    -- it gets priority regardless of the
-    -- Stealing Egg dropdown.
+    -- The selected egg is determined FIRST.
+    -- Multiple eggs may be selected.
+    -- Volcano treatment only happens if the actual returned
+    -- egg is Volcanic Egg.
+    -- ============================================================
+
+    local egg =
+        GetSelectedStealingEgg()
+
+    if not egg then
+
+        Finish()
+
+        task.wait(0.25)
+
+        return
+    end
+
+    local usingVolcanicRoute =
+        egg.Name == VOLCANIC_EGG_NAME
+
+
+    -- ============================================================
+    -- PRE-GRAB ROUTE
     --
-    -- If it does not exist, the normal
-    -- selected-egg system is used.
+    -- NORMAL:
+    -- WP1 -> WP2 -> WP3 -> WP4 -> GRAB
+    --
+    -- VOLCANIC:
+    -- WP1 -> WP2 -> WP3 -> WP4 TO VOLCANO
+    -- -> WAIT 3 SEC -> VOLCANO LOGIC -> GRAB
+    -- ============================================================
 
-    local egg = nil
-    local usingVolcanicRoute = false
+    local root =
+        GetRoot()
+
+    if not root then
+
+        Finish()
+
+        return
+    end
+
+    local preGrabTarget
+
+    if usingVolcanicRoute then
+
+        local volcano =
+            GetVolcanoModel()
+
+        if not volcano then
+
+            warn(
+                "Volcanic Egg: Volcano Model not found."
+            )
+
+            Finish()
+
+            return
+        end
+
+        pcall(
+            function()
+
+                workspace:
+                    RequestStreamAroundAsync(
+                        volcano:GetPivot().Position
+                    )
+
+            end
+        )
+
+        preGrabTarget =
+            volcano:GetPivot().Position
+
+    else
+
+        local eggPosition =
+            GetModelPosition(
+                egg
+            )
+
+        if not eggPosition then
+
+            Finish()
+
+            return
+        end
+
+        preGrabTarget =
+            eggPosition
+    end
 
 
-    local renderedEggs =
-        workspace:FindFirstChild(
-            "RenderedEggs"
+    local preGrabWaypoints =
+        BuildWaypoints(
+            root.Position,
+            preGrabTarget,
+            4
         )
 
 
-    if renderedEggs then
+    if #preGrabWaypoints == 0 then
 
-        local volcanicEgg =
-            renderedEggs:FindFirstChild(
-                VOLCANIC_EGG_NAME
-            )
-
-
-        if volcanicEgg
-            and volcanicEgg:IsA("Model")
+        if not TeleportTo(
+            preGrabTarget
+        )
         then
 
-            egg = volcanicEgg
-            usingVolcanicRoute = true
+            Finish()
 
+            return
+        end
+
+    else
+
+        if not RunWaypointList(
+            preGrabWaypoints
+        )
+        then
+
+            Finish()
+
+            return
         end
 
     end
 
 
-    -- No Volcanic Egg exists.
-    -- Use the normal selected egg.
-    if not egg then
+    -- WP4 is the final pre-grab position.
+    if not StealingEnabled then
 
+        Finish()
+
+        return
+    end
+
+
+    root =
+        GetRoot()
+
+    if not root then
+
+        Finish()
+
+        return
+    end
+
+
+    root.CFrame =
+        CFrame.new(
+            preGrabTarget
+        )
+
+
+    -- ============================================================
+    -- VOLCANIC SPECIAL TREATMENT
+    -- ============================================================
+
+    if usingVolcanicRoute then
+
+        -- Exact requested 3-second wait.
+        if not WaitStealing(3) then
+
+            Finish()
+
+            return
+        end
+
+        -- Volcano logic does NOT grab the egg.
+        if not RunVolcanicRoute() then
+
+            Finish()
+
+            return
+        end
+
+        -- Wait for the actual Volcanic Egg after
+        -- the Volcano logic has finished.
+        egg =
+            WaitForVolcanicEgg()
+
+    else
+
+        -- Re-fetch the actual normal selected egg
+        -- immediately before grabbing.
         egg =
             GetSelectedStealingEgg()
 
@@ -1542,61 +1683,24 @@ local function RunStealingEgg()
 
     if not egg then
 
-        StealingRunning = false
-
-        task.wait(0.25)
+        Finish()
 
         return
-
     end
 
 
-    --  ====
-    -- VOLCANIC SPECIAL ROUTE
-    --  ====
+    -- ============================================================
+    -- GRAB EGG
+    -- ============================================================
 
-    if usingVolcanicRoute then
-
-        if not RunVolcanicRoute() then
-
-            StealingRunning = false
-
-            return
-
-        end
-
-
-        -- Re-fetch after the Volcano route because
-        -- the original model may have streamed/rebuilt.
-        egg =
-            WaitForVolcanicEgg()
-
-
-        if not egg then
-
-            StealingRunning = false
-
-            return
-
-        end
-
-    end
-
-
-    --  ====
-    -- ORIGINAL AUTO EGG FLOW
-    --  ====
-
-    local root =
+    root =
         GetRoot()
-
 
     if not root then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1605,13 +1709,11 @@ local function RunStealingEgg()
             egg
         )
 
-
     if not eggPosition then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1631,90 +1733,30 @@ local function RunStealingEgg()
     )
     then
 
-        StealingRunning = false
+        Finish()
 
         return
-
-    end
-
-
-    root =
-        GetRoot()
-
-
-    if egg.Name == VOLCANIC_EGG_NAME then
-        egg =
-            WaitForVolcanicEgg()
-    else
-        egg =
-            GetSelectedStealingEgg()
-    end
-
-
-    if not root
-        or not egg
-    then
-
-        StealingRunning = false
-
-        return
-
-    end
-
-
-    eggPosition =
-        GetModelPosition(
-            egg
-        )
-
-
-    if not eggPosition then
-
-        StealingRunning = false
-
-        return
-
-    end
-
-
-    root.CFrame =
-        CFrame.new(
-            eggPosition
-                + Vector3.new(
-                    0,
-                    3,
-                    0
-                )
-        )
-
-
-    if not WaitStealing(
-        LOAD_WAIT
-    )
-    then
-
-        StealingRunning = false
-
-        return
-
     end
 
 
     if egg.Name == VOLCANIC_EGG_NAME then
+
         egg =
             WaitForVolcanicEgg()
+
     else
+
         egg =
             GetSelectedStealingEgg()
+
     end
 
 
     if not egg then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1730,10 +1772,9 @@ local function RunStealingEgg()
             "Stealing: Egg prompt not found."
         )
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1747,16 +1788,18 @@ local function RunStealingEgg()
     )
     then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
-    --  ====
-    -- ORIGINAL RETURN ROUTE
-    --  ====
+    -- ============================================================
+    -- POST-GRAB ROUTE
+    --
+    -- WP5 -> WP6 -> WP7 -> WP8 -> WP9 -> WP10
+    -- -> NEAR FENCE -> BASEPLATE
+    -- ============================================================
 
     local myPlot =
         GetMyPlot()
@@ -1772,10 +1815,9 @@ local function RunStealingEgg()
             "Stealing: Owned Plot not found."
         )
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1789,10 +1831,9 @@ local function RunStealingEgg()
             "Stealing: Owned Baseplate not found."
         )
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1802,13 +1843,14 @@ local function RunStealingEgg()
 
     if not root then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
+    -- IMPORTANT:
+    -- This position is captured AFTER the egg is grabbed.
     local startPosition =
         root.Position
 
@@ -1822,83 +1864,32 @@ local function RunStealingEgg()
 
     if not baseplatePoint then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
-    local direction =
-        baseplatePoint
-            - startPosition
-
-
-    direction =
-        Vector3.new(
-            direction.X,
-            0,
-            direction.Z
+    -- Six waypoints = WP5 through WP10.
+    local postGrabWaypoints =
+        BuildWaypoints(
+            startPosition,
+            baseplatePoint,
+            6
         )
-
-
-    if direction.Magnitude
-        < 0.1
-    then
-
-        StealingRunning = false
-
-        return
-
-    end
-
-
-    direction =
-        direction.Unit
-
-
-    local totalDistance =
-        (
-            baseplatePoint
-                - startPosition
-        ).Magnitude
-
-
-    local waypoints = {}
-
-
-    for i = 1, 10 do
-
-        local fraction =
-            i / 11
-
-
-        table.insert(
-            waypoints,
-
-            startPosition
-                + direction
-                * (
-                    totalDistance
-                    * fraction
-                )
-        )
-
-    end
 
 
     for _, waypoint
         in ipairs(
-            waypoints
+            postGrabWaypoints
         )
     do
 
         if not StealingEnabled then
 
-            StealingRunning = false
+            Finish()
 
             return
-
         end
 
 
@@ -1908,10 +1899,9 @@ local function RunStealingEgg()
 
         if not root then
 
-            StealingRunning = false
+            Finish()
 
             return
-
         end
 
 
@@ -1926,14 +1916,17 @@ local function RunStealingEgg()
         )
         then
 
-            StealingRunning = false
+            Finish()
 
             return
-
         end
 
     end
 
+
+    -- ============================================================
+    -- NEAR FENCE
+    -- ============================================================
 
     myPlot =
         GetMyPlot()
@@ -1945,10 +1938,9 @@ local function RunStealingEgg()
         )
     then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1958,10 +1950,9 @@ local function RunStealingEgg()
 
     if not baseplate then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1971,10 +1962,9 @@ local function RunStealingEgg()
 
     if not root then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -1987,10 +1977,9 @@ local function RunStealingEgg()
 
     if not baseplatePoint then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -2011,10 +2000,9 @@ local function RunStealingEgg()
         < 0.1
     then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -2039,12 +2027,15 @@ local function RunStealingEgg()
     )
     then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
+
+    -- ============================================================
+    -- BASEPLATE
+    -- ============================================================
 
     myPlot =
         GetMyPlot()
@@ -2056,10 +2047,9 @@ local function RunStealingEgg()
         )
     then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -2069,10 +2059,9 @@ local function RunStealingEgg()
 
     if not baseplate then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -2082,10 +2071,9 @@ local function RunStealingEgg()
 
     if not root then
 
-        StealingRunning = false
+        Finish()
 
         return
-
     end
 
 
@@ -2095,7 +2083,7 @@ local function RunStealingEgg()
         )
 
 
-    StealingRunning = false
+    Finish()
 end
 
 
@@ -2108,11 +2096,9 @@ local function GetMyEggsFolder()
     local plot =
         GetMyPlot()
 
-
     if not plot then
         return nil
     end
-
 
     return plot:FindFirstChild(
         "Eggs"
@@ -2125,11 +2111,9 @@ local function GetEggCount()
     local eggsFolder =
         GetMyEggsFolder()
 
-
     if not eggsFolder then
         return 0
     end
-
 
     return #eggsFolder:GetChildren()
 end
@@ -2146,18 +2130,14 @@ local function GetBackpackEgg()
             "Backpack"
         )
 
-
     if not backpack then
         return nil
     end
 
-
     local dynamicData =
         GetDynamicEggData()
 
-
     local availableEggs = {}
-
 
     for eggName,
         eggData
@@ -2175,7 +2155,6 @@ local function GetBackpackEgg()
                 backpack:FindFirstChild(
                     eggName
                 )
-
 
             if egg then
 
@@ -2214,7 +2193,6 @@ local function GetBackpackEgg()
             local dataB =
                 b.Data
 
-
             if dataA.RarityRank
                 ~= dataB.RarityRank
             then
@@ -2226,7 +2204,6 @@ local function GetBackpackEgg()
 
             end
 
-
             if dataA.Luck
                 ~= dataB.Luck
             then
@@ -2237,7 +2214,6 @@ local function GetBackpackEgg()
                     dataB.Luck
 
             end
-
 
             if WeightPreference
                 ~= "None"
@@ -2253,14 +2229,12 @@ local function GetBackpackEgg()
                         "Data"
                     )
 
-
                 local weightA =
                     toolDataA
                     and
                     toolDataA:FindFirstChild(
                         "Weight"
                     )
-
 
                 local weightB =
                     toolDataB
@@ -2269,7 +2243,6 @@ local function GetBackpackEgg()
                         "Weight"
                     )
 
-
                 local valueA =
                     weightA
                     and
@@ -2277,14 +2250,12 @@ local function GetBackpackEgg()
                         weightA.Value
                     )
 
-
                 local valueB =
                     weightB
                     and
                     tonumber(
                         weightB.Value
                     )
-
 
                 if valueA
                     and valueB
@@ -2315,7 +2286,6 @@ local function GetBackpackEgg()
                 end
 
             end
-
 
             return
                 string.lower(
@@ -2353,7 +2323,6 @@ local function EquipEgg(
         Player:FindFirstChild(
             "Backpack"
         )
-
 
     if not humanoid
         or not character
@@ -2461,11 +2430,9 @@ local function GetHatchPrompt()
             "Plots"
         )
 
-
     if not plots then
         return nil
     end
-
 
     for _, plot
         in ipairs(
@@ -2482,17 +2449,14 @@ local function GetHatchPrompt()
                     "Data"
                 )
 
-
             if not data then
                 continue
             end
-
 
             local owner =
                 data:FindFirstChild(
                     "Owner"
                 )
-
 
             if not owner
                 or not owner:IsA(
@@ -2503,7 +2467,6 @@ local function GetHatchPrompt()
                 continue
 
             end
-
 
             if owner.Value
                 ~= Player
@@ -2523,7 +2486,6 @@ local function GetHatchPrompt()
                     "Eggs"
                 )
 
-
             if not eggs then
                 return nil
             end
@@ -2537,7 +2499,6 @@ local function GetHatchPrompt()
                 eggs:FindFirstChild(
                     "Egg"
                 )
-
 
             if not egg then
                 return nil
@@ -2553,7 +2514,6 @@ local function GetHatchPrompt()
                     "RootPart"
                 )
 
-
             if not rootPart then
                 return nil
             end
@@ -2567,7 +2527,6 @@ local function GetHatchPrompt()
                 rootPart:FindFirstChild(
                     "Hatch"
                 )
-
 
             if hatch
                 and hatch:IsA(
@@ -2667,7 +2626,6 @@ local function PlaceSelectedEgg()
         )
 
         return false
-
     end
 
 
@@ -2684,7 +2642,6 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2703,7 +2660,6 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2718,7 +2674,6 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2742,7 +2697,6 @@ local function PlaceSelectedEgg()
         humanoid:UnequipTools()
 
         return false
-
     end
 
 
@@ -2768,6 +2722,7 @@ local function PlaceSelectedEgg()
         print(
             "Auto Place: Egg placed."
         )
+
 
         return true
 
@@ -2797,12 +2752,14 @@ local function PlaceSelectedEgg()
             "Auto Place: Egg placed."
         )
 
+
         return true
 
     end
 
 
     humanoid:UnequipTools()
+
 
     WaitingForHatch =
         false
@@ -2901,6 +2858,7 @@ local function HatchEgg()
 
     HatchRunning = false
 
+
     WaitingForHatch =
         false
 
@@ -2937,7 +2895,6 @@ if EggOptions[1] then
     SelectedStealingEggs[
         EggOptions[1]
     ] = true
-
 
     SelectedPlaceEggs[
         EggOptions[1]
@@ -2979,7 +2936,6 @@ local StealingDropdown =
 
                 SelectedStealingEggs =
                     {}
-
 
                 if type(
                     Options
@@ -3103,7 +3059,6 @@ local PlaceDropdown =
 
                 SelectedPlaceEggs =
                     {}
-
 
                 if type(
                     Options
